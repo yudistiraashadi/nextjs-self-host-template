@@ -11,7 +11,6 @@ import {
   Group,
   Menu,
   NavLink,
-  Text,
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -72,9 +71,7 @@ export function DashboardAppshell({
                     leftSection={<IconUserCircle stroke={1.5} />}
                     px={"0.25rem"}
                   >
-                    <Text fw={500} size="md" lh={1}>
-                      {userData.name}
-                    </Text>
+                    <div className="text-sm font-semibold">{userData.name}</div>
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
