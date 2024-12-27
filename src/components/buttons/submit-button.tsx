@@ -46,7 +46,7 @@ export function SubmitButton({
         setIsLoading(true);
 
         // wait 30 seconds to reset the loading state
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
           setIsLoading(false);
         }, 30000);
       }
