@@ -12,6 +12,8 @@ const dbDefaultConfig = {
   schema,
 };
 
+export type DrizzleConnection = ReturnType<typeof drizzle>;
+
 export function createDrizzleConnection(config = dbDefaultConfig) {
   if (!process.env.SUPABASE_CONNECTION_STRING) {
     throw new Error(

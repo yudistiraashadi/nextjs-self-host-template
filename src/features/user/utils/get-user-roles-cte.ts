@@ -1,4 +1,4 @@
-import { type DrizzleConnection } from "@/db/drizzle/connection";
+import { DrizzleConnection } from "@/db/drizzle/connection";
 import { userRoleMembers, userRoles } from "@/db/drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 

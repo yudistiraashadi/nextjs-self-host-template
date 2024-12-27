@@ -1,20 +1,17 @@
 import "server-only";
 
-import { getCurrentUser } from "@/features/user/functions/get-current-user";
+import { getCurrentUser } from "@/features/user/actions/get-current-user";
 import { cache } from "react";
 
 // map role id to role name
-const roleMap = new Map([[1, "admin"]]);
+const roleMap = new Map([
+  [1, "user"],
+  [2, "admin"],
+]);
 
-type Role = "admin";
+type Role = "user" | "admin";
 
-type AuthGuardProps = {
-  allowedRoles: Role[];
-};
-
-export const authGuard = cache(async function (
-  { allowedRoles }: AuthGuardProps = { allowedRoles: [] },
-) {
+export const authGuard = cache(async function (allowedRoles: Role[] = []) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {

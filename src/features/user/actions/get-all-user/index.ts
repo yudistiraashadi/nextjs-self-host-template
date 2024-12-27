@@ -4,15 +4,11 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { authUsers, userProfiles } from "@/db/drizzle/schema";
 import { getUserRolesCTE } from "@/features/user/utils/get-user-roles-cte";
 import { eq, getTableColumns, sql } from "drizzle-orm";
-import { unstable_cacheTag } from "next/cache";
-import { getUserByIdCacheKeyHashed } from "./cache-key";
+import { cache } from "react";
 
-export type GetUserByIdResponse = Awaited<ReturnType<typeof getUserById>>;
+export type GetAllUserResponse = Awaited<ReturnType<typeof getAllUser>>;
 
-export const getUserById = async function (id: string) {
-  "use cache";
-  unstable_cacheTag(getUserByIdCacheKeyHashed(id));
-
+export const getAllUser = cache(async function () {
   const db = createDrizzleConnection();
 
   const userRolesCTE = getUserRolesCTE(db);
@@ -20,7 +16,7 @@ export const getUserById = async function (id: string) {
   return await db
     .with(userRolesCTE)
     .select({
-      email: authUsers.email,
+      username: sql<string>`SPLIT_PART(${authUsers.email}, '@', 1)`,
       ...getTableColumns(userProfiles),
       userRole: sql<
         { id: number; name: string }[]
@@ -28,7 +24,5 @@ export const getUserById = async function (id: string) {
     })
     .from(authUsers)
     .innerJoin(userProfiles, eq(authUsers.id, userProfiles.id))
-    .leftJoin(userRolesCTE, eq(authUsers.id, userRolesCTE.userId))
-    .limit(1)
-    .then((res) => res[0]);
-};
+    .innerJoin(userRolesCTE, eq(authUsers.id, userRolesCTE.userId));
+});

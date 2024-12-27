@@ -1,5 +1,5 @@
 import { createServerClient } from "@/db/supabase/server";
-import { getUserById } from "@/features/user/functions/get-user-by-id";
+import { getUserById } from "@/features/user/actions/get-user-by-id";
 import { cache } from "react";
 
 export const getCurrentUser = cache(async function () {
