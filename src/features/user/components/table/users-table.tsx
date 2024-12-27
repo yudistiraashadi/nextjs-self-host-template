@@ -99,16 +99,12 @@ export function UsersTable() {
           successCallback: () => {
             modals.close("deactivate-user");
 
-            queryClient.invalidateQueries({
-              ...getAllUserQueryOptions(),
-              exact: true,
-            });
+            queryClient.invalidateQueries(getAllUserQueryOptions());
 
             if (selectedUserId) {
-              queryClient.removeQueries({
-                ...getUserByIdQueryOptions(selectedUserId),
-                exact: true,
-              });
+              queryClient.removeQueries(
+                getUserByIdQueryOptions(selectedUserId),
+              );
 
               setSelectedUserId(undefined);
             }
@@ -178,16 +174,12 @@ export function UsersTable() {
           successCallback: () => {
             modals.close("activate-user");
 
-            queryClient.invalidateQueries({
-              ...getAllUserQueryOptions(),
-              exact: true,
-            });
+            queryClient.invalidateQueries(getAllUserQueryOptions());
 
             if (selectedUserId) {
-              queryClient.removeQueries({
-                ...getUserByIdQueryOptions(selectedUserId),
-                exact: true,
-              });
+              queryClient.removeQueries(
+                getUserByIdQueryOptions(selectedUserId),
+              );
 
               setSelectedUserId(undefined);
             }

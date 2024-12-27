@@ -52,17 +52,11 @@ export function CreateOrUpdateUserModalForm({
           onClose();
 
           // invalidate all user cache
-          queryClient.invalidateQueries({
-            ...getAllUserQueryOptions(),
-            exact: true,
-          });
+          queryClient.invalidateQueries(getAllUserQueryOptions());
 
           // kalau update user, invalidate user yang bersangkutan
           if (userData) {
-            queryClient.invalidateQueries({
-              ...getUserByIdQueryOptions(userData.id),
-              exact: true,
-            });
+            queryClient.invalidateQueries(getUserByIdQueryOptions(userData.id));
           }
 
           if (successCallback) {

@@ -3,7 +3,7 @@ import { getAllUserRole } from ".";
 
 export const getAllUserRoleQueryOptions = () =>
   queryOptions({
-    queryKey: ["user-role"],
+    queryKey: ["user-role", "all"],
     queryFn: () => getAllUserRole(),
     staleTime: Infinity,
   });

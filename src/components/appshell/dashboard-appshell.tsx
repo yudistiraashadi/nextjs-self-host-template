@@ -2,6 +2,7 @@
 
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
+import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import {
   AppShell,
   Box,
@@ -14,15 +15,7 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconBoxMultiple8,
-  IconHome,
-  IconSettings,
-  IconTicket,
-  IconTicketOff,
-  IconUserCircle,
-  IconUsersGroup,
-} from "@tabler/icons-react";
+import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -37,6 +30,8 @@ export function DashboardAppshell({
 }: DashboardAppshellProps) {
   const [opened, { toggle }] = useDisclosure();
   const pathname = usePathname();
+
+  const isUserAdminValue = isUserAdmin(userData);
 
   return (
     <AppShell
@@ -108,6 +103,23 @@ export function DashboardAppshell({
           active={pathname === "/dashboard"}
           leftSection={<IconHome size="1.25rem" stroke={1.5} />}
         />
+
+        {/* ADMIN MENU */}
+        {isUserAdminValue ? (
+          <>
+            <p className="p-2 text-xs text-gray-500">Admin</p>
+
+            <NavLink
+              label="User"
+              onClick={toggle}
+              component={Link}
+              href="/dashboard/admin/user"
+              active={pathname?.startsWith("/dashboard/admin/user") ?? false}
+              leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+            />
+          </>
+        ) : null}
+        {/* END OF ADMIN MENU */}
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

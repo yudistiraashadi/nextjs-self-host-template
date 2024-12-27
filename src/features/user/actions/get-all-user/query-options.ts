@@ -3,6 +3,6 @@ import { getAllUser } from ".";
 
 export const getAllUserQueryOptions = () =>
   queryOptions({
-    queryKey: ["user"],
+    queryKey: ["user", "all"],
     queryFn: () => getAllUser(),
   });
