@@ -53,10 +53,10 @@ export function DashboardAppshell({
                 />
 
                 <UnstyledButton hiddenFrom="lg" onClick={toggle}>
-                  Logo Desktop
+                  Logo Mobile
                 </UnstyledButton>
 
-                <Box visibleFrom="lg">Logo Mobile</Box>
+                <Box visibleFrom="lg">Logo Desktop</Box>
               </div>
 
               {/* <DatetimeComponent /> */}
@@ -121,7 +121,9 @@ export function DashboardAppshell({
         ) : null}
         {/* END OF ADMIN MENU */}
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main className="bg-gray-100 dark:bg-inherit">
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 }

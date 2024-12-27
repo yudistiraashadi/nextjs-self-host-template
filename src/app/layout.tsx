@@ -30,10 +30,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Title",
-    default: "Title",
+    template: "%s - Website Title",
+    default: "Website Title",
   },
-  description: "Description",
+  description: "Website Description",
 };
 
 const mantineTheme = createTheme({

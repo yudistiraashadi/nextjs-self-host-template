@@ -3,3 +3,22 @@
 }
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @mixin dark {
+      --mantine-color-body: #121212;
+      --mantine-color-text: #fff;
+    }
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply grid gap-x-8 md:grid-cols-[1fr_min(42.875rem,_calc(100%-64px))_1fr] md:[&>*]:col-start-2;
+  }
+
+  .full-bleed {
+    @apply col-[1_/_4] w-full;
+  }
+}
