@@ -1,7 +1,7 @@
 "use server";
 
 import { createServerClient } from "@/db/supabase/server";
-import { permanentRedirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export async function logout() {
   const supabase = await createServerClient();
@@ -12,5 +12,5 @@ export async function logout() {
     console.error(error);
   }
 
-  permanentRedirect("/");
+  redirect("/", RedirectType.replace);
 }

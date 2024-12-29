@@ -4,7 +4,7 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { authUsers, userProfiles } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { and, eq, isNull } from "drizzle-orm";
-import { permanentRedirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -70,5 +70,5 @@ export async function login(prevState: any, formData: FormData) {
   // END OF DATA PROCESSING
 
   // redirect if success
-  permanentRedirect("/dashboard");
+  redirect("/dashboard", RedirectType.replace);
 }

@@ -15,7 +15,10 @@ export const authGuard = cache(async function (allowedRoles: Role[] = []) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
-    throw new Error("User not found");
+    return {
+      success: false,
+      error: "User not found",
+    };
   }
 
   if (allowedRoles.length > 0) {
@@ -24,9 +27,15 @@ export const authGuard = cache(async function (allowedRoles: Role[] = []) {
     );
 
     if (!allowedRoles.some((role) => currentUserRoleArray.includes(role))) {
-      throw new Error("Unauthorized");
+      return {
+        success: false,
+        error: "Unauthorized",
+      };
     }
   }
 
-  return currentUser;
+  return {
+    success: true,
+    data: currentUser,
+  };
 });
