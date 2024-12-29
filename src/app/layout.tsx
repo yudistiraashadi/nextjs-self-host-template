@@ -9,7 +9,7 @@ import "@mantine/notifications/styles.css";
 
 import "mantine-react-table/styles.css";
 
-import { FlashNotification } from "@/lib/notification/flash-notification";
+import { SearchParamsNotification } from "@/lib/notification/search-params-notification";
 import TanstackQueryProvider from "@/lib/tanstack-query/provider";
 import {
   ColorSchemeScript,
@@ -21,7 +21,6 @@ import {
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import NextTopLoader from "nextjs-toploader";
-import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,9 +67,7 @@ export default function RootLayout({
                 autoClose={10000}
               />
 
-              <Suspense>
-                <FlashNotification />
-              </Suspense>
+              <SearchParamsNotification />
 
               {children}
             </ModalsProvider>
