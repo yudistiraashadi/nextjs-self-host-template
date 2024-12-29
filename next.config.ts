@@ -1,7 +1,33 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // sharp webpack configuration
+  // ref: https://github.com/vercel/vercel/issues/11052#issuecomment-2263565471
+  webpack: (config) => ({
+    ...config,
+    externals: [
+      ...config.externals,
+      {
+        sharp: "commonjs sharp",
+      },
+    ],
+  }),
+  // allow images from Supabase storage
+  // ref: https://nextjs.org/docs/messages/next-image-unconfigured-host
+  //  images: {
+  //   remotePatterns: [
+  //     {
+  //       protocol: "https",
+  //       hostname: "utebebrolnerwfsiioep.supabase.co",
+  //       port: "",
+  //       pathname: "/**",
+  //     },
+  //   ],
+  // },
   experimental: {
+    // serverActions: {
+    //   bodySizeLimit: "200mb",
+    // },
     // dynamicIO: true,
     // reactCompiler: true,
     staleTimes: {
