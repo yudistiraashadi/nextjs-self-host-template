@@ -41,7 +41,13 @@ export function SearchParamsNotification() {
         `${pathname}${searchParamsString ? `?${searchParamsString}` : ""}`,
       );
     }
-  }, [notificationMessage, notificationTitle, notificationType]);
+  }, [
+    pathname,
+    searchParams,
+    notificationMessage,
+    notificationTitle,
+    notificationType,
+  ]);
 
   return null;
 }

@@ -21,6 +21,7 @@ import {
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import NextTopLoader from "nextjs-toploader";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -67,7 +68,9 @@ export default function RootLayout({
                 autoClose={10000}
               />
 
-              <SearchParamsNotification />
+              <Suspense>
+                <SearchParamsNotification />
+              </Suspense>
 
               {children}
             </ModalsProvider>
