@@ -105,9 +105,46 @@ Penggunaan folder `features` di template kita, biasanya dibagi menjadi beberapa 
 
 Berisikan helper-helper functions seperti custom `hooks`, helper untuk supabase, compress image, dll.
 
+# Naming Convention
+
+## 1. Files and Directories
+
+- Use kebab-case for directories and files: create-or-update-user-modal-form.tsx
+- TypeScript config files use .ts extension: next.config.ts, tailwind.config.ts
+- Configuration files use appropriate extensions: .mjs, .ts, .json
+
+## 2. React Components
+
+- Use PascalCase for component names: export function CreateOrUpdateUserModalForm()
+- Group related components in feature folders under features
+
+## 3. Functions
+
+- Use camelCase for function names like: deletePlatNomorAction
+- Server actions (under actions/) use descriptive verbs: createUser, updateUser, deleteUser
+- Query related functions use consistent suffixes: getAllUserQueryOptions
+
+## 4. Variables
+
+- Use camelCase for variables and state: userData, platNomorException
+- Boolean variables often start with is: isOpen, isActionPending
+
+## 5. Database
+
+- Use snake_case for database table and column names in Drizzle schema
+- Use descriptive singular nouns for table names
+
+## 6. Project Structure
+
+- Core code lives in src directory
+- Features are grouped in features
+- Shared components in components
+- Database code in db
+- Utilities in lib
+
 # Common Patterns
 
-## Read operation w/ Server Action and Tanstack Query
+## 1. Read operation w/ Server Action and Tanstack Query
 
 Server action merupakan sebuah function khusus yang diperkenalkan di React 19 https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations . Server action merupakan semacam RPC dimana function dapat digunakan secara langsung di client maupun di server component. Secara teknis, server action sekarang hanya menggunakan POST request, tapi bisa digunakan layaknya GET request, yaitu untuk melakukan Read operation.
 
@@ -257,7 +294,7 @@ function Component() {
 }
 ```
 
-## Table w/ Tanstack Query and Modals
+## 2. Table w/ Tanstack Query and Modals
 
 Penggunaan Tanstack Query dengan modals juga sangat bagus dengan meleverage teknik Read operation w/ Server Action and Tanstack Query. Penggunaan modal dianjutkan untuk form-form yang tidak memerlukan input yang banyak seperti edit pada data simpel dan deletion. Alurnya adalah:
 
@@ -470,7 +507,7 @@ export function PlatNomorExceptionTable() {
 }
 ```
 
-## Single Form for update / create
+## 3. Single Form for update / create
 
 Untuk sebuah form, biasanya satu form digunakan untuk satu operation. Tetapi karena biasanya update / create menyangkut di satu data yang sama, maka sebenarnya bisa digunakan satu form yang sama dengan merubah beberapa bagian. Alurnya adalah:
 
@@ -660,7 +697,7 @@ export function CreateOrUpdateUserModalForm({
 }
 ```
 
-## UUIDv7 for Multiple Data Insertion
+## 4. UUIDv7 for Multiple Data Insertion
 
 `UUID` atau Universally Unique Identifier adalah 36-character alphanumeric string yang biasa digunakan sebagai ID di table database. UUID sangat berguna untuk melakukan insertion pada >1 table yang bergantung pada satu sama lain. Dengan begini, tidak perlu menunggu insertion main record sebelum insert second record dan keduanya bisa dilakukan insertion secara concurrently.
 
@@ -690,7 +727,7 @@ await Promise.all([
 ]);
 ```
 
-## Image Insertion to Supabase
+## 5. Image Insertion to Supabase
 
 Supabase sebagai BaaS, digunakan juga sebagai sumber bucket untuk files seperti image dan videos. Khusus untuk image, disarankan untuk pertama melakukan compression pada image agar penampilan image tetap optimal. Beserta dengan `UUIDv7`, dapat dilakukan proses seperti berikut:
 
