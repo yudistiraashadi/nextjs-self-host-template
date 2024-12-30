@@ -109,29 +109,29 @@ Berisikan helper-helper functions seperti custom `hooks`, helper untuk supabase,
 
 ## 1. Files and Directories
 
-- Use kebab-case for directories and files: create-or-update-user-modal-form.tsx
-- TypeScript config files use .ts extension: next.config.ts, tailwind.config.ts
-- Configuration files use appropriate extensions: .mjs, .ts, .json
+- Use `kebab-case` for directories and files: `create-or-update-user-modal-form.tsx`
+- TypeScript config files use `.ts` extension: next.config.ts, tailwind.config.ts
+- Configuration files use appropriate extensions: `.mjs`, `.ts`, `.json`
 
 ## 2. React Components
 
-- Use PascalCase for component names: export function CreateOrUpdateUserModalForm()
+- Use `PascalCase` for component names: `export function CreateOrUpdateUserModalForm()`
 - Group related components in feature folders under features
 
 ## 3. Functions
 
-- Use camelCase for function names like: deletePlatNomorAction
-- Server actions (under actions/) use descriptive verbs: createUser, updateUser, deleteUser
-- Query related functions use consistent suffixes: getAllUserQueryOptions
+- Use `camelCase` for function names like: `deletePlatNomorAction`
+- Server actions (under `actions/`) use descriptive verbs: `createUser`, `updateUser`, `deleteUser`
+- Query related functions use consistent suffixes: `getAllUserQueryOptions`
 
 ## 4. Variables
 
-- Use camelCase for variables and state: userData, platNomorException
-- Boolean variables often start with is: isOpen, isActionPending
+- Use `camelCase` for variables and state: `userData`, `platNomorException`
+- Boolean variables often start with `is`: `isOpen`, `isActionPending`
 
 ## 5. Database
 
-- Use snake_case for database table and column names in Drizzle schema
+- Use `snake_case` for database table and column names in Drizzle schema
 - Use descriptive singular nouns for table names
 
 ## 6. Project Structure
