@@ -254,47 +254,108 @@ function Component() {
   return (
     <section>
       <div>
-        {data1}
+        {data1.data}
         {/* 
             reset data 1 akan berupa tanstackQuery's invalidateQuery
             untuk melakukan data invalidation secara fine-grained
         */}
         <button
-          onclick={() => {
+          onClick={() => {
             queryClient.invalidateQueries({
               queryKey: ["data", 1],
             });
           }}
-        />
+        >
+          Invalide Data 1
+        </button>
       </div>
 
       <div>
-        {data2}
+        {data2.data}
         <button
-          onclick={() => {
+          onClick={() => {
             queryClient.invalidateQueries({
               queryKey: ["data", 2],
             });
           }}
-        />
+        >
+          Invalide Data 2
+        </button>
       </div>
 
       <div>
-        {data3}
+        {data3.data}
         <button
-          onclick={() => {
+          onClick={() => {
             queryClient.invalidateQueries({
               queryKey: ["data", 3],
             });
           }}
-        />
+        >
+          Invalide Data 3
+        </button>
       </div>
     </section>
   );
 }
 ```
 
-## 2. Table w/ Tanstack Query and Modals
+## 2. Server Actions for CRUD with zod and zod-form-data
+
+Server actions digunakan untuk melakukan CRUD operation pada server. Untuk melakukan validasi data, kita menggunakan `zod` untuk melakukan validasi data. `zod` adalah package yang digunakan untuk melakukan validasi data dengan menggunakan schema. `zod-form-data` adalah package yang digunakan untuk melakukan validasi data dari form-data.
+
+Berikut contoh penggunaan `zod` dan `zod-form-data`:
+
+```tsx
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+
+export async function createUser(prevState: any, formData: FormData) {
+  const db = createDrizzleConnection();
+
+  // VALIDATION
+  const validationRules = z.object({
+    name: zfd.text(z.string().min(1).max(100)),
+    username: zfd.text(z.string().min(3).max(20)),
+    userRoles: zfd.repeatable(
+      z.array(zfd.numeric(z.number().int().positive())).min(1),
+    ),
+    password: zfd.text(z.string().min(6).max(30)),
+    passwordConfirmation: zfd.text(z.string().min(6).max(30)),
+  });
+
+  const validationResult = await zfd
+    .formData(validationRules)
+    .refine((data) => data.password === data.passwordConfirmation, {
+      message: "Password confirmation must be same as password",
+      path: ["passwordConfirmation"],
+    })
+    .safeParseAsync(formData);
+
+  // validasi error
+  if (!validationResult.success) {
+    const errorFlattened =
+      validationResult.error.format() as z.inferFormattedError<
+        typeof validationRules
+      >;
+
+    return {
+      error: {
+        general: undefined,
+        name: errorFlattened.name?._errors,
+        username: errorFlattened.username?._errors,
+        password: errorFlattened.password?._errors,
+        passwordConfirmation: errorFlattened.passwordConfirmation?._errors,
+        userRoles: errorFlattened.userRoles?._errors,
+      },
+    };
+  }
+
+  // Rest of the code
+}
+```
+
+## 3. Table w/ Tanstack Query and Modals
 
 Penggunaan Tanstack Query dengan modals juga sangat bagus dengan meleverage teknik Read operation w/ Server Action and Tanstack Query. Penggunaan modal dianjutkan untuk form-form yang tidak memerlukan input yang banyak seperti edit pada data simpel dan deletion. Alurnya adalah:
 
@@ -507,7 +568,7 @@ export function PlatNomorExceptionTable() {
 }
 ```
 
-## 3. Single Form for update / create
+## 4. Single Form for update / create
 
 Untuk sebuah form, biasanya satu form digunakan untuk satu operation. Tetapi karena biasanya update / create menyangkut di satu data yang sama, maka sebenarnya bisa digunakan satu form yang sama dengan merubah beberapa bagian. Alurnya adalah:
 
@@ -697,7 +758,7 @@ export function CreateOrUpdateUserModalForm({
 }
 ```
 
-## 4. UUIDv7 for Multiple Data Insertion
+## 5. UUIDv7 for Multiple Data Insertion
 
 `UUID` atau Universally Unique Identifier adalah 36-character alphanumeric string yang biasa digunakan sebagai ID di table database. UUID sangat berguna untuk melakukan insertion pada >1 table yang bergantung pada satu sama lain. Dengan begini, tidak perlu menunggu insertion main record sebelum insert second record dan keduanya bisa dilakukan insertion secara concurrently.
 
@@ -729,7 +790,7 @@ await Promise.all([
 ]);
 ```
 
-## 5. Image Insertion to Supabase
+## 6. Image Insertion to Supabase
 
 Supabase sebagai BaaS, digunakan juga sebagai sumber bucket untuk files seperti image dan videos. Khusus untuk image, disarankan untuk pertama melakukan compression pada image agar penampilan image tetap optimal. Beserta dengan `UUIDv7`, dapat dilakukan proses seperti berikut:
 
