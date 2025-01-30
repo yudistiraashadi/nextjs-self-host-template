@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
     ],
   }),
-  // allow images from Supabase storage
+  // allow images from outside the domain
   // ref: https://nextjs.org/docs/messages/next-image-unconfigured-host
   //  images: {
   //   remotePatterns: [
@@ -28,8 +28,7 @@ const nextConfig: NextConfig = {
     // serverActions: {
     //   bodySizeLimit: "200mb",
     // },
-    // dynamicIO: true,
-    // reactCompiler: true,
+    reactCompiler: true,
     staleTimes: {
       dynamic: 30,
       static: 300,
