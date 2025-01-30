@@ -20,7 +20,7 @@ export function LoginForm() {
           actionDispatch(new FormData(e.currentTarget));
         });
       }}
-      className="mt-8 rounded-lg border p-8 shadow-md"
+      className="mt-8 rounded-lg border border-gray-200 p-8 shadow-md"
     >
       {actionState?.error?.general ? (
         <Alert variant="light" color="red" icon={<IconInfoCircle />} mb="1rem">
