@@ -88,8 +88,8 @@ importers:
         specifier: ^3
         version: 3.2.0
       '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.1
+        version: 4.0.1
       '@tanstack/eslint-plugin-query':
         specifier: ^5.65.0
         version: 5.65.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.3)
@@ -133,8 +133,8 @@ importers:
         specifier: ^0.6.11
         version: 0.6.11(prettier-plugin-organize-imports@4.1.0(prettier@3.4.2)(typescript@5.7.3))(prettier@3.4.2)
       tailwindcss:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.1
+        version: 4.0.1
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -576,8 +576,8 @@ packages:
     resolution: {integrity: sha512-3z1SpWoDeaA6K6jd92CRrGyDghOcRILEgyWVHRhaUm/tcpiazwJpU9BSG0xB7GGGnl9capojaC+zme/nKsZd/w==}
     engines: {node: '>= 10'}
 
-  '@tailwindcss/postcss@4.0.0':
-    resolution: {integrity: sha512-lI2bPk4TvwavHdehjr5WiC6HnZ59hacM6ySEo4RM/H7tsjWd8JpqiNW9ThH7rO/yKtrn4mGBoXshpvn8clXjPg==}
+  '@tailwindcss/postcss@4.0.1':
+    resolution: {integrity: sha512-fZHL49vCDauQymdm2U1jehuUeX8msYVDKB/2v+jWhTQleH3QE8J1dJ2dnL5tqRvB0udjBP4kwUC1ZIVIdv66YA==}
 
   '@tanstack/eslint-plugin-query@5.65.0':
     resolution: {integrity: sha512-UpPtXcAZPHcoEJY8KFcBg/iS99DYGRfYwKo7BwTIJP0lfrdGEL5r2B8YyYERdXBYZfZUQuLgRdU++pD7dltx3g==}
@@ -2086,9 +2086,6 @@ packages:
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
-  tailwindcss@4.0.0:
-    resolution: {integrity: sha512-ULRPI3A+e39T7pSaf1xoi58AqqJxVCLg8F/uM5A3FadUbnyDTgltVnXJvdkTjwCOGA6NazqHVcwPJC5h2vRYVQ==}
-
   tailwindcss@4.0.1:
     resolution: {integrity: sha512-UK5Biiit/e+r3i0O223bisoS5+y7ZT1PM8Ojn0MxRHzXN1VPZ2KY6Lo6fhu1dOfCfyUAlK7Lt6wSxowRabATBw==}
 
@@ -2648,14 +2645,14 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.0.1
       '@tailwindcss/oxide-win32-x64-msvc': 4.0.1
 
-  '@tailwindcss/postcss@4.0.0':
+  '@tailwindcss/postcss@4.0.1':
     dependencies:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.0.1
       '@tailwindcss/oxide': 4.0.1
       lightningcss: 1.29.1
       postcss: 8.5.1
-      tailwindcss: 4.0.0
+      tailwindcss: 4.0.1
 
   '@tanstack/eslint-plugin-query@5.65.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.3)':
     dependencies:
@@ -4265,8 +4262,6 @@ snapshots:
   tabbable@6.2.0: {}
 
   tailwind-merge@2.6.0: {}
-
-  tailwindcss@4.0.0: {}
 
   tailwindcss@4.0.1: {}
 
