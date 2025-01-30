@@ -8,7 +8,12 @@ export function DashboardSectionContainer({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-lg bg-white p-6 shadow-lg", className)}>
+    <section
+      className={cn(
+        "space-y-6 rounded-lg border border-[var(--app-shell-border-color)] bg-[var(--mantine-color-body)] p-6",
+        className,
+      )}
+    >
       {children}
     </section>
   );
