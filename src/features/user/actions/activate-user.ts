@@ -10,15 +10,20 @@ export async function activateUser(prevState: any, formData: FormData) {
   const db = createDrizzleConnection();
 
   // VALIDATION
+  const validationRules = z.object({
+    id: zfd.text(z.string().uuid()),
+  });
+
   const validationResult = await zfd
-    .formData({
-      id: zfd.text(z.string().uuid()),
-    })
+    .formData(validationRules)
     .safeParseAsync(formData);
 
   // validasi error
   if (!validationResult.success) {
-    const errorFormatted = validationResult.error.format() as any;
+    const errorFormatted =
+      validationResult.error.format() as z.inferFormattedError<
+        typeof validationRules
+      >;
 
     return {
       error: {

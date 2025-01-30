@@ -8,7 +8,7 @@ import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/que
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
 import { CreateOrUpdateUserModalForm } from "@/features/user/components/form/create-or-update-user-modal-form";
 import { roleBadgeColor } from "@/features/user/constants";
-import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
 import { Badge, Button } from "@mantine/core";

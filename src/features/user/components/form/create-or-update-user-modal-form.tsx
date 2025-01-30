@@ -6,7 +6,7 @@ import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/que
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
 import { updateUser } from "@/features/user/actions/update-user";
-import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import {
   Button,

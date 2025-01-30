@@ -312,7 +312,7 @@ import { deletePlatNomorException } from "@/features/plat-nomor-exception/action
 import { GetAllPlatNomorExceptionResponse } from "@/features/plat-nomor-exception/actions/get-all-plat-nomor-exception";
 import { getAllPlatNomorExceptionQueryOptions } from "@/features/plat-nomor-exception/actions/get-all-plat-nomor-exception/query-options";
 import { CreateOrUpdatePlatNomorExceptionModalForm } from "@/features/plat-nomor-exception/components/form/create-or-update-plat-nomor-exception-modal-form";
-import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
 import { Button } from "@mantine/core";
@@ -524,7 +524,7 @@ import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/que
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
 import { updateUser } from "@/features/user/actions/update-user";
-import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import {
   Button,
@@ -711,6 +711,8 @@ Alurnya adalah:
 Sebagai contoh:
 
 ```tsx
+import { v7 as uuidv7 } from "uuid";
+
 // Insert data berupa mobil (car) dan owner mobil tersebut (owner)
 const mainRecordId = uuidv7();
 
@@ -732,6 +734,9 @@ await Promise.all([
 Supabase sebagai BaaS, digunakan juga sebagai sumber bucket untuk files seperti image dan videos. Khusus untuk image, disarankan untuk pertama melakukan compression pada image agar penampilan image tetap optimal. Beserta dengan `UUIDv7`, dapat dilakukan proses seperti berikut:
 
 ```tsx
+import { v7 as uuidv7 } from "uuid";
+import { compressImageWebp } from "@/lib/image/compress-image-webp";
+
 const recordId = uuidv7();
 
 // Compress both images concurrently

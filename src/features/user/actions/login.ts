@@ -9,16 +9,21 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 export async function login(prevState: any, formData: FormData) {
+  const validationRules = z.object({
+    username: zfd.text(z.string().min(5)),
+    password: zfd.text(z.string().min(6)),
+  });
+
   const validationResult = await zfd
-    .formData({
-      username: zfd.text(z.string().min(5)),
-      password: zfd.text(z.string().min(6)),
-    })
+    .formData(validationRules)
     .safeParseAsync(formData);
 
   // validasi error
   if (!validationResult.success) {
-    const errorFormatted = validationResult.error.format() as any;
+    const errorFormatted =
+      validationResult.error.format() as z.inferFormattedError<
+        typeof validationRules
+      >;
 
     return {
       error: {

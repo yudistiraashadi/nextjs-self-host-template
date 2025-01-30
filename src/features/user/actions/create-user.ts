@@ -11,16 +11,18 @@ export async function createUser(prevState: any, formData: FormData) {
   const db = createDrizzleConnection();
 
   // VALIDATION
+  const validationRules = z.object({
+    name: zfd.text(z.string().min(1).max(100)),
+    username: zfd.text(z.string().min(3).max(20)),
+    userRoles: zfd.repeatable(
+      z.array(zfd.numeric(z.number().int().positive())).min(1),
+    ),
+    password: zfd.text(z.string().min(6).max(30)),
+    passwordConfirmation: zfd.text(z.string().min(6).max(30)),
+  });
+
   const validationResult = await zfd
-    .formData({
-      name: zfd.text(z.string().min(1).max(100)),
-      username: zfd.text(z.string().min(3).max(20)),
-      userRoles: zfd.repeatable(
-        z.array(zfd.numeric(z.number().int().positive())).min(1),
-      ),
-      password: zfd.text(z.string().min(6).max(30)),
-      passwordConfirmation: zfd.text(z.string().min(6).max(30)),
-    })
+    .formData(validationRules)
     .refine((data) => data.password === data.passwordConfirmation, {
       message: "Password confirmation must be same as password",
       path: ["passwordConfirmation"],
@@ -29,16 +31,19 @@ export async function createUser(prevState: any, formData: FormData) {
 
   // validasi error
   if (!validationResult.success) {
-    const errorFormatted = validationResult.error.format() as any;
+    const errorFlattened =
+      validationResult.error.format() as z.inferFormattedError<
+        typeof validationRules
+      >;
 
     return {
       error: {
         general: undefined,
-        name: errorFormatted.name?._errors,
-        username: errorFormatted.username?._errors,
-        password: errorFormatted.password?._errors,
-        passwordConfirmation: errorFormatted.passwordConfirmation?._errors,
-        userRoles: errorFormatted.userRoles?._errors,
+        name: errorFlattened.name?._errors,
+        username: errorFlattened.username?._errors,
+        password: errorFlattened.password?._errors,
+        passwordConfirmation: errorFlattened.passwordConfirmation?._errors,
+        userRoles: errorFlattened.userRoles?._errors,
       },
     };
   }

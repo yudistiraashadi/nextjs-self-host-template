@@ -11,17 +11,19 @@ export async function updateUser(prevState: any, formData: FormData) {
   const db = createDrizzleConnection();
 
   // VALIDATION
+  const validationRules = z.object({
+    id: zfd.text(z.string().uuid()),
+    name: zfd.text(z.string().min(1)),
+    username: zfd.text(z.string().min(5)),
+    userRoles: zfd.repeatable(
+      z.array(zfd.numeric(z.number().int().positive())).min(1),
+    ),
+    password: zfd.text(z.string().min(6).optional()),
+    passwordConfirmation: zfd.text(z.string().min(6).optional()),
+  });
+
   const validationResult = await zfd
-    .formData({
-      id: zfd.text(z.string().uuid()),
-      name: zfd.text(z.string().min(1)),
-      username: zfd.text(z.string().min(5)),
-      userRoles: zfd.repeatable(
-        z.array(zfd.numeric(z.number().int().positive())).min(1),
-      ),
-      password: zfd.text(z.string().min(6).optional()),
-      passwordConfirmation: zfd.text(z.string().min(6).optional()),
-    })
+    .formData(validationRules)
     .refine((data) => data.password === data.passwordConfirmation, {
       message: "Password confirmation must be same as password",
       path: ["passwordConfirmation"],
@@ -30,7 +32,10 @@ export async function updateUser(prevState: any, formData: FormData) {
 
   // validasi error
   if (!validationResult.success) {
-    const errorFormatted = validationResult.error.format() as any;
+    const errorFormatted =
+      validationResult.error.format() as z.inferFormattedError<
+        typeof validationRules
+      >;
 
     return {
       error: {
