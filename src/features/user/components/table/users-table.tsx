@@ -26,6 +26,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -314,6 +315,14 @@ export function UsersTable() {
     data: allUserQuery.data ?? [],
   });
 
+  /**
+   * do this to prevent React Compiler auto optimize
+   * which will cause the table to not re-render after the data is updated
+   * ref: https://github.com/TanStack/table/issues/5567
+   * ref: https://github.com/TanStack/virtual/issues/743
+   */
+  const tableHookRef = useRef(table);
+
   return (
     <section className="space-y-4">
       <div className="flex justify-end">
@@ -322,7 +331,7 @@ export function UsersTable() {
         </Button>
       </div>
 
-      <MantineReactTable table={table} />
+      <MantineReactTable table={tableHookRef.current} />
 
       {isOpen ? (
         <CreateOrUpdateUserModalForm
