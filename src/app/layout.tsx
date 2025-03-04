@@ -3,11 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 // Mantine styles
-import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
-import "@mantine/notifications/styles.css";
-
-import "mantine-react-table/styles.css";
 
 import { SearchParamsNotification } from "@/lib/notification/search-params-notification";
 import TanstackQueryProvider from "@/lib/tanstack-query/provider";
