@@ -1,5 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { authGuard } from "@/features/user/guards/auth-guard";
+import { tryCatchAsync } from "@/lib/utils/try-catch-async";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -9,9 +10,9 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
   // AUTH GUARD
-  const authResponse = await authGuard();
+  const [currentUser, currentUserError] = await tryCatchAsync(authGuard());
 
-  if (!authResponse.success || !authResponse.data) {
+  if (!currentUser || currentUserError) {
     return redirect("/");
   }
   // END OF AUTH GUARD
