@@ -14,11 +14,11 @@
     "@mantine/hooks": "^7.17.1",
     "@mantine/modals": "^7.17.1",
     "@mantine/notifications": "^7.17.1",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.49.1",
+    "@t3-oss/env-nextjs": "^0.12.0",
     "@tabler/icons-react": "^3.30.0",
     "@tanstack/react-query": "^5.67.1",
     "babel-plugin-react-compiler": "19.0.0-beta-40c6c23-20250301",
+    "better-auth": "^1.2.5",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.40.0",
@@ -30,6 +30,7 @@
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
     "sharp": "^0.33.5",
+    "superjson": "^2.2.2",
     "tailwind-merge": "^3.0.2",
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
@@ -44,8 +45,10 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/uuid": "^10.0.0",
+    "drizzle-kit": "^0.30.6",
     "eslint": "^9.21.0",
     "eslint-config-next": "15.2.1",
+    "eslint-plugin-drizzle": "^0.2.3",
     "postcss": "^8.5.3",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
@@ -55,10 +58,5 @@
     "tailwindcss": "^4.0.9",
     "typescript": "^5.7.3"
   },
-  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp"
-    ]
-  }
+  "packageManager": "pnpm@10.8.0"
 }

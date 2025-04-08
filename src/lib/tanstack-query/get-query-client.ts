@@ -1,33 +1,25 @@
 import {
   defaultShouldDehydrateQuery,
   isServer,
-  MutationCache,
   QueryClient,
 } from "@tanstack/react-query";
-
-// copied from this: https://github.com/TanStack/query/issues/8277#issuecomment-2533437804
-// To fix nextjs's DynamicIO: true error
-export class MutationCache_TEMP_FIX extends MutationCache {
-  constructor() {
-    const old = Date.now;
-    Date.now = () => Math.round(performance.timeOrigin + performance.now());
-    super();
-    Date.now = old;
-  }
-}
+import superjson from "superjson";
 
 function makeQueryClient() {
   return new QueryClient({
-    mutationCache: new MutationCache_TEMP_FIX(),
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000,
       },
       dehydrate: {
         // include pending queries in dehydration
+        serializeData: superjson.serialize,
         shouldDehydrateQuery: (query) =>
           defaultShouldDehydrateQuery(query) ||
           query.state.status === "pending",
+      },
+      hydrate: {
+        deserializeData: superjson.deserialize,
       },
     },
   });
