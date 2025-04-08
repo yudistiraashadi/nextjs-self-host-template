@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     default: "Website Title",
   },
   description: "Website Description",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 const mantineTheme = createTheme({
