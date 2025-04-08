@@ -1,32 +1,35 @@
 import "server-only";
 
-import { getCurrentUser } from "@/features/user/actions/get-current-user";
+import { authClient } from "@/auth/client";
 import { cache } from "react";
-
-// map role id to role name
-const roleMap = new Map([
-  [1, "user"],
-  [2, "admin"],
-]);
 
 type Role = "user" | "admin";
 
 export const authGuard = cache(async function (allowedRoles: Role[] = []) {
-  const currentUser = await getCurrentUser();
+  const currentSession = await authClient.getSession();
 
-  if (!currentUser) {
-    throw new Error("User not found");
+  if (!currentSession.data) {
+    throw new Error("[AuthGuard Error] User not found");
   }
 
   if (allowedRoles.length > 0) {
-    const currentUserRoleArray = currentUser.userRole.map((role) =>
-      roleMap.get(role.id),
-    );
+    if (!currentSession.data.user.role) {
+      throw new Error("[AuthGuard Error] Role not found");
+    }
 
-    if (!allowedRoles.some((role) => currentUserRoleArray.includes(role))) {
-      throw new Error("Unauthorized");
+    // ref: https://www.better-auth.com/docs/plugins/admin#roles
+    const userRoles = currentSession.data.user.role.split(",");
+
+    if (userRoles) {
+      const hasPermission = userRoles.some((role) =>
+        allowedRoles.includes(role as Role),
+      );
+
+      if (!hasPermission) {
+        throw new Error("[AuthGuard Error] User not authorized");
+      }
     }
   }
 
-  return currentUser;
+  return currentSession;
 });

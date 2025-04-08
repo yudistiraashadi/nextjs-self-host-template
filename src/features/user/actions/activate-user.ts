@@ -1,14 +1,10 @@
 "use server";
 
-import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { userProfiles } from "@/db/drizzle/schema";
-import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 export async function activateUser(prevState: any, formData: FormData) {
-  const db = createDrizzleConnection();
-
   // VALIDATION
   const validationRules = z.object({
     id: zfd.text(z.string().uuid()),
@@ -18,7 +14,7 @@ export async function activateUser(prevState: any, formData: FormData) {
     .formData(validationRules)
     .safeParseAsync(formData);
 
-  // validasi error
+  // error validation
   if (!validationResult.success) {
     const errorFormatted =
       validationResult.error.format() as z.inferFormattedError<
@@ -31,27 +27,23 @@ export async function activateUser(prevState: any, formData: FormData) {
       },
     };
   }
+  // END OF VALIDATION
 
   try {
-    await db.transaction(async (tx) => {
-      // update user
-      await tx
-        .update(userProfiles)
-        .set({
-          deletedAt: null,
-          updatedAt: new Date(),
-        })
-        .where(eq(userProfiles.id, validationResult.data.id));
+    await auth.api.unbanUser({
+      body: {
+        userId: validationResult.data.id,
+      },
     });
   } catch (error: Error | any) {
     return {
       error: {
-        general: error?.message || "Terjadi kesalahan",
+        general: error?.message || "Failed to activate user",
       },
     };
   }
 
   return {
-    message: "User berhasil diaktifkan",
+    message: "User activated successfully",
   };
 }

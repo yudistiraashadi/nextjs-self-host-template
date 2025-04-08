@@ -14,6 +14,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
+    plugins: {
+      drizzle,
+    },
     rules: {
       "import/no-cycle": 2,
       "@typescript-eslint/no-explicit-any": "off",

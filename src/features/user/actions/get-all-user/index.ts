@@ -1,7 +1,7 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { authUsers, userProfiles } from "@/db/drizzle/schema";
+import {} from "@/db/drizzle/schema";
 import { getUserRolesCTE } from "@/features/user/utils/get-user-roles-cte";
 import { eq, getTableColumns, sql } from "drizzle-orm";
 import { cache } from "react";

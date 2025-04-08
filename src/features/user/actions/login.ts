@@ -1,16 +1,14 @@
 "use server";
 
-import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { authUsers, userProfiles } from "@/db/drizzle/schema";
-import { createServerClient } from "@/db/supabase/server";
-import { and, eq, isNull } from "drizzle-orm";
+import { auth } from "@/auth";
 import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 export async function login(prevState: any, formData: FormData) {
+  // VALIDATION
   const validationRules = z.object({
-    username: zfd.text(z.string().min(5)),
+    email: zfd.text(z.string().email()),
     password: zfd.text(z.string().min(6)),
   });
 
@@ -18,7 +16,7 @@ export async function login(prevState: any, formData: FormData) {
     .formData(validationRules)
     .safeParseAsync(formData);
 
-  // validasi error
+  // error validation
   if (!validationResult.success) {
     const errorFormatted =
       validationResult.error.format() as z.inferFormattedError<
@@ -27,7 +25,7 @@ export async function login(prevState: any, formData: FormData) {
 
     return {
       error: {
-        username: errorFormatted.username?._errors,
+        email: errorFormatted.email?._errors,
         password: errorFormatted.password?._errors,
       },
     };
@@ -35,40 +33,25 @@ export async function login(prevState: any, formData: FormData) {
   // END OF VALIDATION
 
   // DATA PROCESSING
-  const userEmail = validationResult.data.username + "@email.com";
-  const db = createDrizzleConnection();
-  const supabase = await createServerClient();
-
-  // Check if user exists based on username
-  const [userData] = await db
-    .select({
-      id: authUsers.id,
-      email: authUsers.email,
-    })
-    .from(authUsers)
-    .innerJoin(userProfiles, eq(authUsers.id, userProfiles.id))
-    .where(and(isNull(userProfiles.deletedAt), eq(authUsers.email, userEmail)))
-    .limit(1);
-
-  if (!userData) {
-    return {
-      error: {
-        general: "Akun tidak ditemukan.",
+  try {
+    const data = await auth.api.signInEmail({
+      body: {
+        email: validationResult.data.email,
+        password: validationResult.data.password,
       },
-    };
-  }
+    });
 
-  // login with supabase
-  const { error } = await supabase.auth.signInWithPassword({
-    email: userData.email,
-    password: validationResult.data.password,
-  });
-
-  // supabase error
-  if (error) {
+    if (!data.user) {
+      return {
+        error: {
+          general: "Invalid email or password",
+        },
+      };
+    }
+  } catch (error: Error | any) {
     return {
       error: {
-        general: error.message,
+        general: error?.message || "Failed to login",
       },
     };
   }

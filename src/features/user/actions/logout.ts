@@ -1,16 +1,13 @@
 "use server";
 
-import { createServerClient } from "@/db/supabase/server";
+import { auth } from "@/auth";
+import { headers } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 
 export async function logout() {
-  const supabase = await createServerClient();
-
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    console.error(error);
-  }
+  await auth.api.signOut({
+    headers: await headers(),
+  });
 
   redirect("/", RedirectType.replace);
 }
