@@ -303,7 +303,6 @@ export function UsersTable() {
               <Button
                 color="green"
                 onClick={() => renderActivateUserModal(row.original.id)}
-                className="btn btn-sm btn-danger"
               >
                 Activate
               </Button>
@@ -315,14 +314,12 @@ export function UsersTable() {
                     setSelectedEditUser(row.original);
                     open();
                   }}
-                  className="btn btn-sm btn-danger"
                 >
                   Edit
                 </Button>
                 <Button
                   color="red"
                   onClick={() => renderDeactivateUserModal(row.original.id)}
-                  className="btn btn-sm btn-danger"
                 >
                   Deactivate
                 </Button>

@@ -518,14 +518,12 @@ export function PlatNomorExceptionTable() {
                 });
                 open();
               }}
-              className="btn btn-sm btn-danger"
             >
               Edit
             </Button>
             <Button
               color="red"
               onClick={() => renderDeletePlatNomorModal(row.original.id)}
-              className="btn btn-sm btn-danger"
             >
               Hapus
             </Button>
