@@ -26,6 +26,12 @@ const nextConfig: NextConfig = {
   //     },
   //   ],
   // },
+  cacheHandler:
+    process.env.NODE_ENV === "production"
+      ? require.resolve("./cache-handler.mjs")
+      : undefined,
+  // This is required for the experimental feature of pre-populating the cache with the initial data
+  instrumentationHook: true,
   experimental: {
     serverActions: {
       bodySizeLimit: "200mb",

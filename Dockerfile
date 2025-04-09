@@ -67,6 +67,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy the fetch-cache from the builder stage to the standalone output
+# ref: https://caching-tools.github.io/next-shared-cache/usage/populating-cache-on-start
+COPY .next/cache/fetch-cache/ .next/standalone/.next/cache/fetch-cache/
+
 # Environment variables must be redefined at run time on docker-compose.yml
 
 # Note: Don't expose ports here, Compose will handle that for us
