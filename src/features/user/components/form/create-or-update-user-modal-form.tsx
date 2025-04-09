@@ -1,11 +1,10 @@
 "use client";
 
 import { createUser } from "@/features/user/actions/create-user";
-import { getAllUserRoleQueryOptions } from "@/features/user/actions/get-all-user-role/query-options";
-import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
-import { getUsersQueryOptions } from "@/features/user/actions/get-users/query-options";
+import type { GetUserListResponse } from "@/features/user/actions/get-user-list";
 import { updateUser } from "@/features/user/actions/update-user";
+import { userRole } from "@/features/user/constants";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import {
@@ -16,27 +15,21 @@ import {
   PasswordInput,
   TextInput,
 } from "@mantine/core";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
-
-type CreateOrUpdateUserModalFormProps = {
-  userData?: GetUserByIdResponse | null;
-  isOpen: boolean;
-  onClose: () => void;
-  successCallback?: () => void;
-};
 
 export function CreateOrUpdateUserModalForm({
   userData,
   isOpen,
   onClose,
   successCallback,
-}: CreateOrUpdateUserModalFormProps) {
-  // QUERY DATA
+}: {
+  userData?: GetUserListResponse[number];
+  isOpen: boolean;
+  onClose: () => void;
+  successCallback?: () => void;
+}) {
   const queryClient = useQueryClient();
-
-  const userRoleData = useQuery(getAllUserRoleQueryOptions());
-  // END QUERY DATA
 
   // CREATE OR UPDATE USER
   const [actionState, actionDispatch, isActionPending] = useActionState(
@@ -52,7 +45,9 @@ export function CreateOrUpdateUserModalForm({
           onClose();
 
           // invalidate all user cache
-          queryClient.invalidateQueries(getUsersQueryOptions());
+          queryClient.invalidateQueries({
+            queryKey: ["user", "list"],
+          });
 
           // kalau update user, invalidate user yang bersangkutan
           if (userData) {
@@ -115,12 +110,10 @@ export function CreateOrUpdateUserModalForm({
           required
           name="userRolesString"
           error={actionState?.error?.userRoles}
-          defaultValue={
-            userData?.userRole?.map((role) => role.id.toString()) ?? ["1"]
-          }
-          data={userRoleData.data?.map((role) => ({
-            value: role.id.toString(),
-            label: role.name,
+          defaultValue={userData?.role?.split(",") ?? ["user"]}
+          data={userRole.map((role) => ({
+            value: role,
+            label: role.charAt(0).toUpperCase() + role.slice(1),
           }))}
         />
 
@@ -135,13 +128,13 @@ export function CreateOrUpdateUserModalForm({
           defaultValue={userData?.name ?? ""}
         />
 
-        {/* username */}
+        {/* email */}
         <TextInput
           required
-          label="Username"
-          name="username"
-          error={actionState?.error?.username}
-          defaultValue={userData?.username ?? ""}
+          label="Email"
+          name="email"
+          error={actionState?.error?.email}
+          defaultValue={userData?.email ?? ""}
         />
 
         <Divider />
@@ -170,7 +163,7 @@ export function CreateOrUpdateUserModalForm({
 
         <div className="mt-12 flex justify-end">
           <Button type="submit" loading={isActionPending}>
-            Simpan
+            {userData ? "Update" : "Add"}
           </Button>
         </div>
       </form>

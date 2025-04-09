@@ -29,10 +29,10 @@ export function LoginForm() {
       ) : null}
 
       <TextInput
-        label="Username"
-        name="username"
+        label="Email"
+        name="email"
         required
-        error={actionState?.error.username}
+        error={actionState?.error.email}
       />
       <PasswordInput
         label="Password"
