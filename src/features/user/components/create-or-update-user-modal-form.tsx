@@ -110,7 +110,7 @@ export function CreateOrUpdateUserModalForm({
         {/* name */}
         <TextInput
           required
-          label="Nama Lengkap"
+          label="Name"
           name="name"
           error={actionState?.error?.name}
           defaultValue={userData?.name ?? ""}
@@ -133,18 +133,18 @@ export function CreateOrUpdateUserModalForm({
           name="password"
           required={!userData}
           description={
-            userData && "Kosongkan jika tidak ingin mengubah password"
+            userData && "Leave blank if you don't want to change password"
           }
           error={actionState?.error?.password}
         />
 
         {/* password confirmation */}
         <PasswordInput
-          label="Konfirmasi Password"
+          label="Password Confirmation"
           name="passwordConfirmation"
           required={!userData}
           description={
-            userData && "Kosongkan jika tidak ingin mengubah password"
+            userData && "Leave blank if you don't want to change password"
           }
           error={actionState?.error?.passwordConfirmation}
         />
