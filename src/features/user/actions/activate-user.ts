@@ -7,7 +7,7 @@ import { zfd } from "zod-form-data";
 export async function activateUser(prevState: any, formData: FormData) {
   // VALIDATION
   const validationRules = z.object({
-    id: zfd.text(z.string().uuid()),
+    id: zfd.text(z.string().min(1)),
   });
 
   const validationResult = await zfd

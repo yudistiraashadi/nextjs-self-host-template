@@ -7,7 +7,7 @@ import { zfd } from "zod-form-data";
 export async function updateUser(prevState: any, formData: FormData) {
   // VALIDATION
   const validationRules = z.object({
-    id: zfd.text(z.string().uuid()),
+    id: zfd.text(z.string().min(1)),
     name: zfd.text(z.string().min(1)),
     email: zfd.text(z.string().email()),
     userRole: zfd.text(z.enum(["admin", "user"])),
