@@ -29,6 +29,7 @@ export async function activateUser(prevState: any, formData: FormData) {
   }
   // END OF VALIDATION
 
+  // DATA PROCESSING
   try {
     await auth.api.unbanUser({
       body: {
@@ -42,6 +43,7 @@ export async function activateUser(prevState: any, formData: FormData) {
       },
     };
   }
+  // END OF DATA PROCESSING
 
   return {
     message: "User activated successfully",

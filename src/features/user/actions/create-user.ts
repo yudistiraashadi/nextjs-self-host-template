@@ -42,6 +42,7 @@ export async function createUser(prevState: any, formData: FormData) {
   }
   // END OF VALIDATION
 
+  // DATA PROCESSING
   const userRoles = validationResult.data.userRoles as string[];
   userRoles.push("user");
 
@@ -63,6 +64,7 @@ export async function createUser(prevState: any, formData: FormData) {
       },
     };
   }
+  // END OF DATA PROCESSING
 
   return {
     message: "User created successfully",

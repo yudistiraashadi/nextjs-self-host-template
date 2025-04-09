@@ -29,7 +29,7 @@ export async function deactivateUser(prevState: any, formData: FormData) {
   }
   // END OF VALIDATION
 
-  // PROCESS
+  // DATA PROCESSING
   try {
     await auth.api.banUser({
       body: {
@@ -47,5 +47,5 @@ export async function deactivateUser(prevState: any, formData: FormData) {
   return {
     message: "User deactivated successfully",
   };
-  // END OF PROCESS
+  // END OF DATA PROCESSING
 }
