@@ -18,6 +18,7 @@ const paramsSchema = z.object({
 });
 
 export type GetUserListResponse = Awaited<ReturnType<typeof getUserList>>;
+
 export async function getUserList(params: SearchParams = {}) {
   const { search, page = 1, pageSize = 10 } = paramsSchema.parse(params);
 

@@ -24,7 +24,14 @@ export default async function AdminUser() {
 
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(getUserListQueryOptions());
+  const defaultUserListParams = {
+    page: 1,
+    pageSize: 10,
+  };
+
+  void queryClient.prefetchQuery(
+    getUserListQueryOptions(defaultUserListParams),
+  );
   void queryClient.prefetchQuery(getUserListCountQueryOptions());
 
   return (

@@ -9,7 +9,7 @@ export async function createUser(prevState: any, formData: FormData) {
   const validationRules = z.object({
     name: zfd.text(z.string().min(1).max(100)),
     email: zfd.text(z.string().email()),
-    userRoles: zfd.repeatable(z.array(zfd.text(z.enum(["admin"])))),
+    userRole: zfd.text(z.enum(["admin", "user"])),
     password: zfd.text(z.string().min(6).max(30)),
     passwordConfirmation: zfd.text(z.string().min(6).max(30)),
   });
@@ -36,25 +36,20 @@ export async function createUser(prevState: any, formData: FormData) {
         email: errorFlattened.email?._errors,
         password: errorFlattened.password?._errors,
         passwordConfirmation: errorFlattened.passwordConfirmation?._errors,
-        userRoles: errorFlattened.userRoles?._errors,
+        userRole: errorFlattened.userRole?._errors,
       },
     };
   }
   // END OF VALIDATION
 
   // DATA PROCESSING
-  const userRoles = validationResult.data.userRoles as string[];
-  userRoles.push("user");
-
-  const userRolesString = userRoles.join(",");
-
   try {
     await auth.api.createUser({
       body: {
         email: validationResult.data.email,
         password: validationResult.data.password,
         name: validationResult.data.name,
-        role: userRolesString,
+        role: validationResult.data.userRole,
       },
     });
   } catch (error: Error | any) {

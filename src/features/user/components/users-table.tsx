@@ -7,7 +7,7 @@ import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/
 import { type GetUserListResponse } from "@/features/user/actions/get-user-list";
 import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count/query-options";
 import { getUserListQueryOptions } from "@/features/user/actions/get-user-list/query-options";
-import { CreateOrUpdateUserModalForm } from "@/features/user/components/form/create-or-update-user-modal-form";
+import { CreateOrUpdateUserModalForm } from "@/features/user/components/create-or-update-user-modal-form";
 import { userRoleBadgeColor } from "@/features/user/constants";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
@@ -45,7 +45,7 @@ export function UsersTable() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [globalFilter, setGlobalFilter] = useState<string | undefined>();
 
   const [isOpen, { open, close }] = useDisclosure(false, {
     onClose: () => setSelectedEditUser(undefined),
@@ -238,22 +238,16 @@ export function UsersTable() {
         id: "role",
         header: "Role",
         filterFn: "contains",
-        filterVariant: "multi-select",
-        enableColumnFilterModes: false,
-        mantineFilterSelectProps: {
-          data: [
-            { value: "admin", label: "Admin" },
-            { value: "user", label: "User" },
-          ],
-        },
         enableGlobalFilter: true,
         Cell: ({ row }) => (
           <div className="flex flex-col gap-1">
-            {row.original.role?.split(",").map((role) => (
-              <Badge key={role} color={userRoleBadgeColor.get(role) ?? "green"}>
-                {role}
-              </Badge>
-            ))}
+            <Badge
+              color={
+                userRoleBadgeColor.get(row.original.role ?? "user") ?? "blue"
+              }
+            >
+              {row.original.role}
+            </Badge>
           </div>
         ),
       },

@@ -11,8 +11,8 @@ import {
   Button,
   Divider,
   Modal,
-  MultiSelect,
   PasswordInput,
+  Select,
   TextInput,
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
@@ -87,30 +87,18 @@ export function CreateOrUpdateUserModalForm({
               formData.append("id", userData.id);
             }
 
-            // apparently MultiSelect give the value as "value1, value2, value3, ...", so
-            // we need to make array of userRolesString to userRoles
-            if (formData.get("userRolesString")) {
-              const userRolesArray = (
-                formData.get("userRolesString") as string
-              ).split(",");
-
-              userRolesArray.forEach((role) => {
-                formData.append("userRoles", role);
-              });
-            }
-
             actionDispatch(formData);
           });
         }}
         className="grid gap-4"
       >
         {/* user roles */}
-        <MultiSelect
+        <Select
           label="Role"
           required
-          name="userRolesString"
-          error={actionState?.error?.userRoles}
-          defaultValue={userData?.role?.split(",") ?? ["user"]}
+          name="userRole"
+          error={actionState?.error?.userRole}
+          defaultValue={userData?.role ?? "user"}
           data={userRole.map((role) => ({
             value: role,
             label: role.charAt(0).toUpperCase() + role.slice(1),
