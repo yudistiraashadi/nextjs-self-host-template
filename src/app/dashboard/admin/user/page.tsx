@@ -29,10 +29,10 @@ export default async function AdminUser() {
     pageSize: 10,
   };
 
-  void queryClient.prefetchQuery(
-    getUserListQueryOptions(defaultUserListParams),
-  );
-  void queryClient.prefetchQuery(getUserListCountQueryOptions());
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getUserListQueryOptions(defaultUserListParams)),
+    queryClient.prefetchQuery(getUserListCountQueryOptions()),
+  ]);
 
   return (
     <DashboardSectionContainer>

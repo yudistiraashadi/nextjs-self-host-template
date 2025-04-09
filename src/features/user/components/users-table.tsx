@@ -16,7 +16,7 @@ import { Badge, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconPlus } from "@tabler/icons-react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   MantineReactTable,
   useMantineReactTable,
@@ -53,7 +53,8 @@ export function UsersTable() {
 
   // QUERY DATA
   const queryClient = useQueryClient();
-  const userListQuery = useSuspenseQuery(
+
+  const userListQuery = useQuery(
     getUserListQueryOptions({
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
@@ -61,7 +62,7 @@ export function UsersTable() {
     }),
   );
 
-  const userListCountQuery = useSuspenseQuery(
+  const userListCountQuery = useQuery(
     getUserListCountQueryOptions({
       search: globalFilter,
     }),
@@ -80,12 +81,12 @@ export function UsersTable() {
 
       modals.open({
         modalId: "deactivate-user",
-        title: "Non Aktifkan User",
+        title: "Deactivate User",
         centered: true,
         children: (
           <>
             <div className="text-sm">
-              Apakah kamu yakin untuk Non Aktifkan User ini?
+              Are you sure you want to deactivate this user?
             </div>
 
             <form
@@ -102,9 +103,9 @@ export function UsersTable() {
                   color="gray"
                   onClick={() => modals.close("deactivate-user")}
                 >
-                  Batal
+                  Cancel
                 </Button>
-                <SubmitButton color={"red"}>Non Aktifkan</SubmitButton>
+                <SubmitButton color={"red"}>Deactivate</SubmitButton>
               </div>
             </form>
           </>
@@ -157,12 +158,12 @@ export function UsersTable() {
 
       modals.open({
         modalId: "activate-user",
-        title: "Aktifkan User",
+        title: "Activate User",
         centered: true,
         children: (
           <>
             <div className="text-sm">
-              Apakah kamu yakin untuk aktifkan user ini?
+              Are you sure you want to activate this user?
             </div>
 
             <form
@@ -179,9 +180,9 @@ export function UsersTable() {
                   color="gray"
                   onClick={() => modals.close("activate-user")}
                 >
-                  Batal
+                  Cancel
                 </Button>
-                <SubmitButton color="green">Aktifkan</SubmitButton>
+                <SubmitButton color="green">Activate</SubmitButton>
               </div>
             </form>
           </>
