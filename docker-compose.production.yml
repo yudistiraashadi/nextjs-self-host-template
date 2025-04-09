@@ -1,0 +1,45 @@
+services:
+  postgres:
+    extends:
+      file: docker-compose.development.yml
+      service: postgres
+
+  pgbouncer:
+    extends:
+      file: docker-compose.development.yml
+      service: pgbouncer
+
+  minio:
+    extends:
+      file: docker-compose.development.yml
+      service: minio
+
+  redis:
+    extends:
+      file: docker-compose.development.yml
+      service: redis
+
+  nextjs:
+    container_name: nextjs
+    image: nextjs:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DATABASE_URL=${DATABASE_URL}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BASE_URL=${BASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_ACCESS_KEY=${REDIS_ACCESS_KEY}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+    restart: always
+    ports:
+      - 3000:3000
