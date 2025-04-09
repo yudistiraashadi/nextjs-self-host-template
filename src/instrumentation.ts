@@ -1,5 +1,8 @@
 export async function register() {
-  if (process.env.NEXT_RUNTIME === "nodejs") {
+  if (
+    process.env.NEXT_RUNTIME === "nodejs" &&
+    process.env.NODE_ENV === "production"
+  ) {
     const { registerInitialCache } = await import(
       "@neshca/cache-handler/instrumentation"
     );
@@ -12,8 +15,8 @@ export async function register() {
       // By default, it populates the cache with pre-rendered pages, routes, and fetch calls.
       // You can disable these features by setting the options to false.
       // For example, if you want to populate the cache with only pre-rendered pages, you can set the options as follows:
-      fetch: false,
-      routes: false,
+      // fetch: false,
+      // routes: false,
     });
   }
 }
