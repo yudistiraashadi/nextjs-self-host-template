@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
   // sharp webpack configuration
   // ref: https://github.com/vercel/vercel/issues/11052#issuecomment-2263565471
   webpack: (config) => ({
@@ -25,9 +27,9 @@ const nextConfig: NextConfig = {
   //   ],
   // },
   experimental: {
-    // serverActions: {
-    //   bodySizeLimit: "200mb",
-    // },
+    serverActions: {
+      bodySizeLimit: "200mb",
+    },
     reactCompiler: true,
     staleTimes: {
       dynamic: 30,
