@@ -51,7 +51,7 @@ export async function getUserList(params: SearchParams = {}) {
     : undefined;
 
   // Build column filter conditions
-  let whereConditions: SQL<unknown>[] = [];
+  const whereConditions: SQL<unknown>[] = [];
 
   if (searchCondition) {
     whereConditions.push(searchCondition);
