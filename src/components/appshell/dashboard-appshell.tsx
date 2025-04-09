@@ -34,8 +34,9 @@ export function DashboardAppshell({
     <AppShell
       header={{ height: 60 }}
       navbar={{ width: 300, breakpoint: "lg", collapsed: { mobile: !opened } }}
-      padding="md"
+      padding="xs"
     >
+      {/* header */}
       <AppShell.Header>
         <Group h="100%" px="md">
           <div className="flex w-full items-center justify-between">
@@ -50,10 +51,10 @@ export function DashboardAppshell({
                 />
 
                 <UnstyledButton hiddenFrom="lg" onClick={toggle}>
-                  Logo Mobile
+                  Mobile Logo
                 </UnstyledButton>
 
-                <Box visibleFrom="lg">Logo Desktop</Box>
+                <Box visibleFrom="lg">Desktop Logo</Box>
               </div>
             </div>
 
@@ -85,6 +86,7 @@ export function DashboardAppshell({
           </div>
         </Group>
       </AppShell.Header>
+      {/* end of header */}
 
       {/* sidebar */}
       <AppShell.Navbar p="xs">
@@ -116,7 +118,9 @@ export function DashboardAppshell({
         ) : null}
         {/* END OF ADMIN MENU */}
       </AppShell.Navbar>
-      <AppShell.Main className="bg-gray-100 dark:bg-inherit">
+      {/* end of sidebar */}
+
+      <AppShell.Main className="bg-gray-100 pb-20 dark:bg-inherit">
         {children}
       </AppShell.Main>
     </AppShell>

@@ -10,7 +10,7 @@ export function DashboardSectionContainer({
   return (
     <section
       className={cn(
-        "space-y-6 rounded-lg border border-[var(--app-shell-border-color)] bg-[var(--mantine-color-body)] p-6",
+        "dark:shadow-0 space-y-6 rounded-lg border border-[var(--app-shell-border-color)] bg-[var(--mantine-color-body)] p-4 shadow-md",
         className,
       )}
     >
