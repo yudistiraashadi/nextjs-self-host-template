@@ -21,7 +21,9 @@ import {
   MantineReactTable,
   useMantineReactTable,
   type MRT_ColumnDef,
+  type MRT_ColumnFiltersState,
   type MRT_PaginationState,
+  type MRT_SortingState,
 } from "mantine-react-table";
 import {
   useActionState,
@@ -46,6 +48,10 @@ export function UsersTable() {
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState<string | undefined>();
+  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
+    [],
+  );
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
   const [isOpen, { open, close }] = useDisclosure(false, {
     onClose: () => setSelectedEditUser(undefined),
@@ -59,12 +65,15 @@ export function UsersTable() {
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
       search: globalFilter,
+      columnFilters,
+      sorting,
     }),
   );
 
   const userListCountQuery = useQuery(
     getUserListCountQueryOptions({
       search: globalFilter,
+      columnFilters,
     }),
   );
   // END QUERY DATA
@@ -237,9 +246,18 @@ export function UsersTable() {
       },
       {
         id: "role",
+        accessorFn: (row) => row.role ?? "user",
         header: "Role",
-        filterFn: "contains",
+        filterFn: "equals",
+        filterVariant: "select",
         enableGlobalFilter: true,
+        enableColumnFilterModes: false,
+        mantineFilterSelectProps: {
+          data: [
+            { value: "admin", label: "Admin" },
+            { value: "user", label: "User" },
+          ],
+        },
         Cell: ({ row }) => (
           <div className="flex flex-col gap-1">
             <Badge
@@ -258,6 +276,7 @@ export function UsersTable() {
         header: "Status",
         filterFn: "equals",
         filterVariant: "select",
+        enableGlobalFilter: true,
         enableColumnFilterModes: false,
         mantineFilterSelectProps: {
           data: [
@@ -265,7 +284,6 @@ export function UsersTable() {
             { value: "Non Active", label: "Non Active" },
           ],
         },
-        enableGlobalFilter: true,
         Cell: ({ row }) => (
           <div>
             {row.original.banned ? (
@@ -336,7 +354,15 @@ export function UsersTable() {
     rowCount: userListCountQuery.data ?? 0,
     onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: (updater) => {
+      setColumnFilters(updater as MRT_ColumnFiltersState);
+    },
+    onSortingChange: (updater) => {
+      setSorting(updater as MRT_SortingState);
+    },
     state: {
+      columnFilters,
+      sorting,
       pagination,
       globalFilter,
       isLoading: userListQuery.isPending,
