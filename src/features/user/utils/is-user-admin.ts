@@ -1,5 +1,5 @@
-import { type GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
+import type { AuthGuardResponse } from "@/features/user/guards/auth-guard";
 
-export function isUserAdmin(user: GetUserByIdResponse) {
-  return user.userRole.some((role) => role.id === 2);
+export function isUserAdmin(user: AuthGuardResponse) {
+  return user.user.role?.split(",").includes("admin") ?? false;
 }

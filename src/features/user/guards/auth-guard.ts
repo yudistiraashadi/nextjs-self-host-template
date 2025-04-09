@@ -5,6 +5,8 @@ import { type UserRole } from "@/features/user/constants";
 import { headers } from "next/headers";
 import { cache } from "react";
 
+export type AuthGuardResponse = Awaited<ReturnType<typeof authGuard>>;
+
 export const authGuard = cache(async function (allowedRoles: UserRole[] = []) {
   const currentUser = await auth.api.getSession({
     headers: await headers(),

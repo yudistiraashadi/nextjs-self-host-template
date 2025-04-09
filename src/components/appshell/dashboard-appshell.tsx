@@ -1,7 +1,7 @@
 "use client";
 
-import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
+import type { AuthGuardResponse } from "@/features/user/guards/auth-guard";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import {
   AppShell,
@@ -18,15 +18,13 @@ import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type DashboardAppshellProps = {
-  children: React.ReactNode | React.ReactNode[];
-  userData: GetUserByIdResponse;
-};
-
 export function DashboardAppshell({
   children,
   userData,
-}: DashboardAppshellProps) {
+}: {
+  children: React.ReactNode;
+  userData: AuthGuardResponse;
+}) {
   const [opened, { toggle }] = useDisclosure();
   const pathname = usePathname();
 
@@ -57,8 +55,6 @@ export function DashboardAppshell({
 
                 <Box visibleFrom="lg">Logo Desktop</Box>
               </div>
-
-              {/* <DatetimeComponent /> */}
             </div>
 
             {/* user avatar */}
@@ -71,7 +67,9 @@ export function DashboardAppshell({
                     leftSection={<IconUserCircle stroke={1.5} />}
                     px={"0.25rem"}
                   >
-                    <div className="text-sm font-semibold">{userData.name}</div>
+                    <div className="text-sm font-semibold">
+                      {userData.user.name}
+                    </div>
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
