@@ -1,21 +1,16 @@
 // @neshca/cache-handler dependencies
-const { CacheHandler } = require("@neshca/cache-handler");
-const createLruHandler = require("@neshca/cache-handler/local-lru").default;
+import { CacheHandler } from "@neshca/cache-handler";
+import createLruHandler from "@neshca/cache-handler/local-lru";
 
 // Next/Redis dependencies
-const { createClient } = require("redis");
-const { PHASE_PRODUCTION_BUILD } = require("next/constants");
+import { createClient } from "redis";
+import { PHASE_PRODUCTION_BUILD } from "next/constants.js";
 
 // @fortedigital/nextjs-cache-handler dependencies
-const createCompositeHandler =
-    require("@fortedigital/nextjs-cache-handler/composite").default;
-const createRedisHandler =
-    require("@fortedigital/nextjs-cache-handler/redis-strings").default;
-const createBufferStringHandler =
-    require("@fortedigital/nextjs-cache-handler/buffer-string-decorator").default;
-const {
-    Next15CacheHandler,
-} = require("@fortedigital/nextjs-cache-handler/next-15-cache-handler");
+import createCompositeHandler from "@fortedigital/nextjs-cache-handler/composite";
+import createRedisHandler from "@fortedigital/nextjs-cache-handler/redis-strings";
+import createBufferStringHandler from "@fortedigital/nextjs-cache-handler/buffer-string-decorator";
+import { Next15CacheHandler } from "@fortedigital/nextjs-cache-handler/next-15-cache-handler";
 
 // Usual onCreation from @neshca/cache-handler
 CacheHandler.onCreation(() => {
@@ -118,4 +113,4 @@ CacheHandler.onCreation(() => {
     return global.cacheHandlerConfigPromise;
 });
 
-module.exports = new Next15CacheHandler();
+export default new Next15CacheHandler();
