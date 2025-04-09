@@ -14,9 +14,9 @@ export default async function DashboardLayout({
   if (!currentUser || currentUserError) {
     return redirect("/");
   }
-
-  const userData = currentUser;
   // END OF AUTH GUARD
 
-  return <DashboardAppshell userData={userData}>{children}</DashboardAppshell>;
+  return (
+    <DashboardAppshell userData={currentUser}>{children}</DashboardAppshell>
+  );
 }

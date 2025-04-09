@@ -3,11 +3,12 @@
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { activateUser } from "@/features/user/actions/activate-user";
 import { deactivateUser } from "@/features/user/actions/deactivate-user";
-import { type GetAllUserResponse } from "@/features/user/actions/get-all-user";
-import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/query-options";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
+import { type GetUserListResponse } from "@/features/user/actions/get-user-list";
+import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count/query-options";
+import { getUserListQueryOptions } from "@/features/user/actions/get-user-list/query-options";
 import { CreateOrUpdateUserModalForm } from "@/features/user/components/form/create-or-update-user-modal-form";
-import { roleBadgeColor } from "@/features/user/constants";
+import { userRoleBadgeColor } from "@/features/user/constants";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
@@ -15,11 +16,12 @@ import { Badge, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconPlus } from "@tabler/icons-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import {
   MantineReactTable,
   useMantineReactTable,
   type MRT_ColumnDef,
+  type MRT_PaginationState,
 } from "mantine-react-table";
 import {
   useActionState,
@@ -32,11 +34,18 @@ import {
 
 export function UsersTable() {
   const [selectedEditUser, setSelectedEditUser] = useState<
-    GetAllUserResponse[number] | undefined
+    GetUserListResponse[number] | undefined
   >();
 
   // selected user id for DEACTIVATE USER and ACTIVATE USER
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>();
+
+  // Pagination and search state
+  const [pagination, setPagination] = useState<MRT_PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const [isOpen, { open, close }] = useDisclosure(false, {
     onClose: () => setSelectedEditUser(undefined),
@@ -44,7 +53,20 @@ export function UsersTable() {
 
   // QUERY DATA
   const queryClient = useQueryClient();
-  const allUserQuery = useQuery(getAllUserQueryOptions());
+  const userListQuery = useSuspenseQuery(
+    getUserListQueryOptions({
+      page: pagination.pageIndex + 1,
+      pageSize: pagination.pageSize,
+      search: globalFilter,
+    }),
+  );
+
+  const userListCountQuery = useSuspenseQuery(
+    getUserListCountQueryOptions({
+      search: globalFilter,
+    }),
+  );
+  // END QUERY DATA
 
   // DEACTIVATE USER
   const [deactivateUserState, deactivateUserAction] = useActionState(
@@ -100,7 +122,9 @@ export function UsersTable() {
           successCallback: () => {
             modals.close("deactivate-user");
 
-            queryClient.invalidateQueries(getAllUserQueryOptions());
+            queryClient.invalidateQueries({
+              queryKey: ["user", "list"],
+            });
 
             if (selectedUserId) {
               queryClient.removeQueries(
@@ -175,7 +199,9 @@ export function UsersTable() {
           successCallback: () => {
             modals.close("activate-user");
 
-            queryClient.invalidateQueries(getAllUserQueryOptions());
+            queryClient.invalidateQueries({
+              queryKey: ["user", "list"],
+            });
 
             if (selectedUserId) {
               queryClient.removeQueries(
@@ -196,40 +222,36 @@ export function UsersTable() {
   );
   // END OF ACTIVATE USER
 
-  const columns = useMemo<MRT_ColumnDef<GetAllUserResponse[number]>[]>(
+  const columns = useMemo<MRT_ColumnDef<GetUserListResponse[number]>[]>(
     () => [
       {
-        accessorKey: "username",
-        header: "Username",
+        accessorKey: "email",
+        header: "Email",
         filterFn: "contains",
       },
       {
         accessorKey: "name",
-        header: "Nama",
+        header: "Name",
         filterFn: "contains",
       },
       {
-        id: "userRole",
-        accessorFn: (row) => row.userRole?.map((role) => role.name).join(", "),
+        id: "role",
         header: "Role",
         filterFn: "contains",
         filterVariant: "multi-select",
         enableColumnFilterModes: false,
         mantineFilterSelectProps: {
           data: [
-            { value: "super admin", label: "Super Admin" },
+            { value: "admin", label: "Admin" },
             { value: "user", label: "User" },
           ],
         },
         enableGlobalFilter: true,
         Cell: ({ row }) => (
           <div className="flex flex-col gap-1">
-            {row.original.userRole?.map((role) => (
-              <Badge
-                key={role.id}
-                color={roleBadgeColor.get(role.id) ?? "green"}
-              >
-                {role.name}
+            {row.original.role?.split(",").map((role) => (
+              <Badge key={role} color={userRoleBadgeColor.get(role) ?? "green"}>
+                {role}
               </Badge>
             ))}
           </div>
@@ -237,24 +259,24 @@ export function UsersTable() {
       },
       {
         id: "status",
-        accessorFn: (row) => (row.deletedAt ? "Non Aktif" : "Aktif"),
+        accessorFn: (row) => (row.banned ? "Non Active" : "Active"),
         header: "Status",
         filterFn: "equals",
         filterVariant: "select",
         enableColumnFilterModes: false,
         mantineFilterSelectProps: {
           data: [
-            { value: "Aktif", label: "Aktif" },
-            { value: "Non Aktif", label: "Non Aktif" },
+            { value: "Active", label: "Active" },
+            { value: "Non Active", label: "Non Active" },
           ],
         },
         enableGlobalFilter: true,
         Cell: ({ row }) => (
           <div>
-            {row.original.deletedAt ? (
-              <Badge color="red">Non Aktif</Badge>
+            {row.original.banned ? (
+              <Badge color="red">Non Active</Badge>
             ) : (
-              <Badge color="green">Aktif</Badge>
+              <Badge color="green">Active</Badge>
             )}
           </div>
         ),
@@ -264,13 +286,13 @@ export function UsersTable() {
         size: 100,
         Cell: ({ row }) => (
           <div className="flex flex-col gap-2">
-            {row.original.deletedAt ? (
+            {row.original.banned ? (
               <Button
                 color="green"
                 onClick={() => renderActivateUserModal(row.original.id)}
                 className="btn btn-sm btn-danger"
               >
-                Aktifkan
+                Activate
               </Button>
             ) : (
               <>
@@ -289,7 +311,7 @@ export function UsersTable() {
                   onClick={() => renderDeactivateUserModal(row.original.id)}
                   className="btn btn-sm btn-danger"
                 >
-                  Non Aktifkan
+                  Deactivate
                 </Button>
               </>
             )}
@@ -307,12 +329,25 @@ export function UsersTable() {
 
   const table = useMantineReactTable({
     ...getDefautTableOptions({
-      queryResult: allUserQuery,
+      queryResult: userListQuery,
     }),
     columns,
     enableRowNumbers: true,
     rowNumberDisplayMode: "original",
-    data: allUserQuery.data ?? [],
+    data: userListQuery.data ?? [],
+    manualPagination: true,
+    manualFiltering: true,
+    enableGlobalFilter: true,
+    rowCount: userListCountQuery.data ?? 0,
+    onPaginationChange: setPagination,
+    onGlobalFilterChange: setGlobalFilter,
+    state: {
+      pagination,
+      globalFilter,
+      isLoading: userListQuery.isPending,
+      showAlertBanner: userListQuery.isError,
+      showProgressBars: userListQuery.isFetching,
+    },
   });
 
   /**
@@ -327,7 +362,7 @@ export function UsersTable() {
     <section className="space-y-4">
       <div className="flex justify-end">
         <Button color="blue" onClick={open} leftSection={<IconPlus />}>
-          Tambah User
+          Add User
         </Button>
       </div>
 

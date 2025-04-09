@@ -2,9 +2,9 @@
 
 import { createUser } from "@/features/user/actions/create-user";
 import { getAllUserRoleQueryOptions } from "@/features/user/actions/get-all-user-role/query-options";
-import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/query-options";
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
+import { getUsersQueryOptions } from "@/features/user/actions/get-users/query-options";
 import { updateUser } from "@/features/user/actions/update-user";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
@@ -52,7 +52,7 @@ export function CreateOrUpdateUserModalForm({
           onClose();
 
           // invalidate all user cache
-          queryClient.invalidateQueries(getAllUserQueryOptions());
+          queryClient.invalidateQueries(getUsersQueryOptions());
 
           // kalau update user, invalidate user yang bersangkutan
           if (userData) {

@@ -1,4 +1,7 @@
-import { type UseQueryResult } from "@tanstack/react-query";
+import {
+  type UseQueryResult,
+  type UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 import {
   MRT_ToggleFiltersButton,
   MRT_ToggleGlobalFilterButton,
@@ -12,7 +15,7 @@ export function getDefautTableOptions<T extends MRT_RowData>({
   initialState,
   state,
 }: {
-  queryResult: UseQueryResult<T[], Error>;
+  queryResult: UseQueryResult<T[], Error> | UseSuspenseQueryResult<T[], Error>;
   initialState?: Partial<MRT_TableState<T>>;
   state?: Partial<MRT_TableState<T>>;
 }): Omit<MRT_TableOptions<T>, "columns" | "data"> {
