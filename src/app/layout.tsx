@@ -51,7 +51,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} font-sans antialiased`}
+        className={`${inter.variable} antialiased`}
       >
         <NextTopLoader />
 

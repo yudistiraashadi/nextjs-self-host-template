@@ -25,7 +25,7 @@
 @layer base {
   body {
     @mixin dark {
-      --mantine-color-body: #121212;
+      /* --mantine-color-body: #121212; */
       --mantine-color-text: #fff;
     }
   }
