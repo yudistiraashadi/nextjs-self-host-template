@@ -16,13 +16,13 @@ export function getS3Client({
   region = "us-east-1",
 }: { region?: string } = {}) {
   return new S3Client({
-    region,
+    region, // Required for AWS S3, but minio doesn't need it
     endpoint: S3_ENDPOINT,
     credentials: {
       accessKeyId: S3_ACCESS_KEY,
       secretAccessKey: S3_SECRET_KEY,
     },
-    forcePathStyle: true, // Required for most MinIO
+    forcePathStyle: true, // Required for MinIO
   });
 }
 

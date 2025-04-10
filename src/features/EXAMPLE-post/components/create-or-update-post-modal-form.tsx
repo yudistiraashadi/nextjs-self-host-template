@@ -16,7 +16,13 @@ import {
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { startTransition, useActionState, useEffect, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 export function CreateOrUpdatePostModalForm({
   postData,
@@ -30,11 +36,12 @@ export function CreateOrUpdatePostModalForm({
   successCallback?: () => void;
 }) {
   const queryClient = useQueryClient();
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(
     postData?.image || null,
   );
-  console.log(postData?.image);
+  const [fileInputId] = useState(
+    `file-input-${Math.random().toString(36).substring(2, 11)}`,
+  );
 
   // CREATE OR UPDATE POST
   const [actionState, actionDispatch, isActionPending] = useActionState(
@@ -76,20 +83,22 @@ export function CreateOrUpdatePostModalForm({
   // END CREATE OR UPDATE POST
 
   // Preview uploaded image
-  useEffect(() => {
-    if (imageFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(imageFile);
-    }
-  }, [imageFile]);
+  const handleThumbnailChange = useCallback(
+    (file: File | null) => {
+      if (file) {
+        const fileURL = URL.createObjectURL(file);
+        setThumbnailPreview(fileURL);
+      }
+    },
+    [setThumbnailPreview],
+  );
 
   // Update image preview when postData changes
   useEffect(() => {
     if (postData?.image) {
-      setImagePreviewUrl(postData.image);
+      setThumbnailPreview(postData.image);
+    } else {
+      setThumbnailPreview(null);
     }
   }, [postData]);
 
@@ -108,18 +117,8 @@ export function CreateOrUpdatePostModalForm({
           startTransition(() => {
             const formData = new FormData(e.currentTarget);
 
-            // print form data
-            for (const [key, value] of formData.entries()) {
-              console.log(key, value);
-            }
-
             if (postData) {
               formData.append("id", postData.id);
-            }
-
-            // Add the image file to formData if it exists
-            if (imageFile) {
-              formData.append("image", imageFile);
             }
 
             actionDispatch(formData);
@@ -148,23 +147,24 @@ export function CreateOrUpdatePostModalForm({
 
         {/* image upload */}
         <FileInput
+          id={fileInputId}
           label="Post Image"
           accept="image/*"
           placeholder="Choose an image"
-          value={imageFile}
-          onChange={setImageFile}
           error={actionState?.error?.image}
-          clearable
+          name="image"
+          onChange={handleThumbnailChange}
         />
 
-        {imagePreviewUrl && (
-          <div className="relative h-40 w-full max-w-md overflow-hidden rounded border border-gray-300">
+        {thumbnailPreview && (
+          <div className="w-full md:w-3/4 lg:w-1/2">
             <Image
-              src={imagePreviewUrl}
-              alt={postData?.title || "Post image preview"}
-              width={400}
-              height={400}
-              className="h-full w-full object-cover"
+              src={thumbnailPreview}
+              alt="Thumbnail Preview"
+              width={500}
+              height={500}
+              className="h-full w-full cursor-pointer object-contain"
+              onClick={() => document.getElementById(fileInputId)?.click()}
             />
           </div>
         )}
