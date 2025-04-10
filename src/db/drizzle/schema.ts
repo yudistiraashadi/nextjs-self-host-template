@@ -74,3 +74,19 @@ export const verification = pgTable("verification", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+// EXAMPLE TABLE - posts. TODO: Remove this
+export const posts = pgTable("EXAMPLE_posts", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  image: text("image"),
+  isProtected: boolean("is_protected").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
