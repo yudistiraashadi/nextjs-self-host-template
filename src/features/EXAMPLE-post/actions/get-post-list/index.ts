@@ -3,18 +3,22 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { getPostListFunction } from "./function";
 
-const validColumns = ["title", "content", "isProtected"] as const;
+export const postListValidColumns = [
+  "title",
+  "content",
+  "isProtected",
+] as const;
 
 export type GetPostListParams = {
   search?: string;
   page?: number;
   pageSize?: number;
   columnFilters?: {
-    id: (typeof validColumns)[number];
+    id: (typeof postListValidColumns)[number];
     value: string;
   }[];
   sorting?: {
-    id: (typeof validColumns)[number];
+    id: (typeof postListValidColumns)[number];
     desc: boolean;
   }[];
 };
@@ -24,10 +28,10 @@ export const getPostListParamsSchema = z.object({
   page: z.coerce.number().positive().default(1),
   pageSize: z.coerce.number().positive().default(10),
   columnFilters: z
-    .array(z.object({ id: z.enum(validColumns), value: z.string() }))
+    .array(z.object({ id: z.enum(postListValidColumns), value: z.string() }))
     .optional(),
   sorting: z
-    .array(z.object({ id: z.enum(validColumns), desc: z.boolean() }))
+    .array(z.object({ id: z.enum(postListValidColumns), desc: z.boolean() }))
     .optional(),
 });
 

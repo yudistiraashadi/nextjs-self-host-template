@@ -3,18 +3,23 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { getUserListFunction } from "./function";
 
-const validColumns = ["name", "email", "role", "status"] as const;
+export const userListValidColumns = [
+  "name",
+  "email",
+  "role",
+  "status",
+] as const;
 
 export type GetUserListParams = {
   search?: string;
   page?: number;
   pageSize?: number;
   columnFilters?: {
-    id: (typeof validColumns)[number];
+    id: (typeof userListValidColumns)[number];
     value: string;
   }[];
   sorting?: {
-    id: (typeof validColumns)[number];
+    id: (typeof userListValidColumns)[number];
     desc: boolean;
   }[];
 };
@@ -24,10 +29,10 @@ export const getUserListParamsSchema = z.object({
   page: z.coerce.number().positive().default(1),
   pageSize: z.coerce.number().positive().default(10),
   columnFilters: z
-    .array(z.object({ id: z.enum(validColumns), value: z.string() }))
+    .array(z.object({ id: z.enum(userListValidColumns), value: z.string() }))
     .optional(),
   sorting: z
-    .array(z.object({ id: z.enum(validColumns), desc: z.boolean() }))
+    .array(z.object({ id: z.enum(userListValidColumns), desc: z.boolean() }))
     .optional(),
 });
 

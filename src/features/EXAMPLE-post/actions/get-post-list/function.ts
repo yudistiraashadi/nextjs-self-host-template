@@ -48,7 +48,7 @@ export async function getPostListFunction(params: GetPostListParams = {}) {
   }
 
   // Determine the sorting configuration
-  const applySorting = (query: PgSelect) => {
+  function applySorting<T extends PgSelect>(query: T) {
     if (sorting && sorting.length > 0) {
       const sortItem = sorting[0];
 
@@ -69,7 +69,7 @@ export async function getPostListFunction(params: GetPostListParams = {}) {
 
     // Default sorting
     return query.orderBy(desc(posts.createdAt));
-  };
+  }
 
   // Execute the query
   const query = db
