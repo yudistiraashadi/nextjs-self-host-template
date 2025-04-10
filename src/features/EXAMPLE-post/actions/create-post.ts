@@ -2,6 +2,10 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
+import { getS3Client } from "@/lib/utils/s3-storage";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import path from "node:path";
+import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -11,6 +15,7 @@ export async function createPost(prevState: any, formData: FormData) {
     title: zfd.text(z.string().min(1).max(100)),
     content: zfd.text(z.string().min(1).max(1000)),
     isProtected: zfd.checkbox(),
+    image: zfd.file().optional(),
   });
 
   const validationResult = await zfd
@@ -30,20 +35,52 @@ export async function createPost(prevState: any, formData: FormData) {
         title: errorFlattened.title?._errors,
         content: errorFlattened.content?._errors,
         isProtected: errorFlattened.isProtected?._errors,
+        image: errorFlattened.image?._errors,
       },
     };
   }
   // END OF VALIDATION
 
-  // DATA PROCESSING
-  const db = createDrizzleConnection();
-
   try {
+    // DATA PROCESSING
+    const db = createDrizzleConnection();
+    const currentId = uuidv7();
+
+    // Process image upload if any
+    let imageKey: string | undefined;
+    if (validationResult.data.image) {
+      try {
+        // Get the original file type (jpg, png, etc.)
+        const originalFileExtension = path.extname(
+          validationResult.data.image.name,
+        );
+        const s3Client = getS3Client();
+
+        await s3Client.send(
+          new PutObjectCommand({
+            Bucket: "post",
+            Key: currentId + originalFileExtension,
+            Body: validationResult.data.image,
+            ContentType: validationResult.data.image.type,
+          }),
+        );
+
+        imageKey = "post/" + currentId + originalFileExtension;
+      } catch (error: Error | any) {
+        return {
+          error: {
+            general:
+              "Failed to process image: " + (error?.message || "Unknown error"),
+          },
+        };
+      }
+    }
     await db.transaction(async (tx) => {
       await tx.insert(posts).values({
         title: validationResult.data.title,
         content: validationResult.data.content,
         isProtected: validationResult.data.isProtected,
+        image: imageKey, // Store the image key/path in the database
       });
     });
   } catch (error: Error | any) {

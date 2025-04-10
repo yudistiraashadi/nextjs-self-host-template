@@ -15,6 +15,7 @@ export const env = createEnv({
     BASE_URL: z.string().url(),
     MINIO_ROOT_USER: z.string(),
     MINIO_ROOT_PASSWORD: z.string(),
+    MINIO_ENDPOINT: z.string().url(),
   },
 
   /**
@@ -37,6 +38,7 @@ export const env = createEnv({
     BASE_URL: process.env.BASE_URL,
     MINIO_ROOT_USER: process.env.MINIO_ROOT_USER,
     MINIO_ROOT_PASSWORD: process.env.MINIO_ROOT_PASSWORD,
+    MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

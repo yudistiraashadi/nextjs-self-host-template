@@ -6,9 +6,16 @@ import type { GetPostListResponse } from "@/features/EXAMPLE-post/actions/get-po
 import { updatePost } from "@/features/EXAMPLE-post/actions/update-post";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import { Button, Checkbox, Modal, Textarea, TextInput } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  FileInput,
+  Modal,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { startTransition, useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 
 export function CreateOrUpdatePostModalForm({
   postData,
@@ -22,6 +29,8 @@ export function CreateOrUpdatePostModalForm({
   successCallback?: () => void;
 }) {
   const queryClient = useQueryClient();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   // CREATE OR UPDATE POST
   const [actionState, actionDispatch, isActionPending] = useActionState(
@@ -62,6 +71,17 @@ export function CreateOrUpdatePostModalForm({
   );
   // END CREATE OR UPDATE POST
 
+  // Preview uploaded image
+  useEffect(() => {
+    if (imageFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(imageFile);
+    }
+  }, [imageFile]);
+
   return (
     <Modal
       opened={isOpen}
@@ -84,6 +104,11 @@ export function CreateOrUpdatePostModalForm({
 
             if (postData) {
               formData.append("id", postData.id);
+            }
+
+            // Add the image file to formData if it exists
+            if (imageFile) {
+              formData.append("image", imageFile);
             }
 
             actionDispatch(formData);
@@ -109,6 +134,33 @@ export function CreateOrUpdatePostModalForm({
           defaultValue={postData?.content ?? ""}
           minRows={5}
         />
+
+        {/* image upload */}
+        <FileInput
+          label="Post Image"
+          description="Upload an image for this post (will be converted to WebP)"
+          accept="image/*"
+          placeholder="Choose an image"
+          value={imageFile}
+          onChange={setImageFile}
+          error={actionState?.error?.image}
+          clearable
+        />
+
+        {imagePreviewUrl && (
+          <div className="flex flex-col items-start gap-2">
+            <div className="text-sm text-gray-600">
+              {imageFile ? "New image preview:" : "Current image:"}
+            </div>
+            <div className="relative h-40 w-full max-w-md overflow-hidden rounded border border-gray-300">
+              <img
+                src={imagePreviewUrl}
+                alt={postData?.title || "Post image preview"}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        )}
 
         {/* isProtected */}
         <Checkbox
