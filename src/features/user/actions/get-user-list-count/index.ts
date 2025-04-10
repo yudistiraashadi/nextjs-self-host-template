@@ -4,6 +4,7 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { type SearchParams } from "@/features/user/actions/get-user-list";
 import { count, ilike, or } from "drizzle-orm";
+import { cache } from "react";
 import { z } from "zod";
 
 export type CountSearchParams = Omit<SearchParams, "page" | "pageSize">;
@@ -16,27 +17,29 @@ export type GetUserListCountResponse = Awaited<
   ReturnType<typeof getUserListCount>
 >;
 
-export async function getUserListCount(params: CountSearchParams = {}) {
-  const { search } = paramsSchema.parse(params);
+export const getUserListCount = cache(
+  async (params: CountSearchParams = {}) => {
+    const { search } = paramsSchema.parse(params);
 
-  const db = createDrizzleConnection();
+    const db = createDrizzleConnection();
 
-  // Build the search conditions
-  const searchCondition = search
-    ? or(
-        ilike(userTable.name, `%${search}%`),
-        ilike(userTable.email, `%${search}%`),
-        ilike(userTable.role, `%${search}%`),
-      )
-    : undefined;
+    // Build the search conditions
+    const searchCondition = search
+      ? or(
+          ilike(userTable.name, `%${search}%`),
+          ilike(userTable.email, `%${search}%`),
+          ilike(userTable.role, `%${search}%`),
+        )
+      : undefined;
 
-  // Get total count for pagination
-  const totalResult = await db
-    .select({ count: count() })
-    .from(userTable)
-    .where(searchCondition);
+    // Get total count for pagination
+    const totalResult = await db
+      .select({ count: count() })
+      .from(userTable)
+      .where(searchCondition);
 
-  const total = Number(totalResult[0]?.count) || 0;
+    const total = Number(totalResult[0]?.count) || 0;
 
-  return total;
-}
+    return total;
+  },
+);

@@ -8,6 +8,7 @@ import type {
   MRT_ColumnFiltersState,
   MRT_SortingState,
 } from "mantine-react-table";
+import { cache } from "react";
 import { z } from "zod";
 
 export type SearchParams = {
@@ -30,7 +31,7 @@ const paramsSchema = z.object({
 
 export type GetUserListResponse = Awaited<ReturnType<typeof getUserList>>;
 
-export async function getUserList(params: SearchParams = {}) {
+export const getUserList = cache(async (params: SearchParams = {}) => {
   const {
     search,
     page = 1,
@@ -119,4 +120,4 @@ export async function getUserList(params: SearchParams = {}) {
     .$dynamic();
 
   return await applySorting(query);
-}
+});
