@@ -138,7 +138,6 @@ export function CreateOrUpdatePostModalForm({
         {/* image upload */}
         <FileInput
           label="Post Image"
-          description="Upload an image for this post (will be converted to WebP)"
           accept="image/*"
           placeholder="Choose an image"
           value={imageFile}
@@ -148,17 +147,12 @@ export function CreateOrUpdatePostModalForm({
         />
 
         {imagePreviewUrl && (
-          <div className="flex flex-col items-start gap-2">
-            <div className="text-sm text-gray-600">
-              {imageFile ? "New image preview:" : "Current image:"}
-            </div>
-            <div className="relative h-40 w-full max-w-md overflow-hidden rounded border border-gray-300">
-              <img
-                src={imagePreviewUrl}
-                alt={postData?.title || "Post image preview"}
-                className="h-full w-full object-cover"
-              />
-            </div>
+          <div className="relative h-40 w-full max-w-md overflow-hidden rounded border border-gray-300">
+            <img
+              src={imagePreviewUrl}
+              alt={postData?.title || "Post image preview"}
+              className="h-full w-full object-cover"
+            />
           </div>
         )}
 
@@ -169,6 +163,7 @@ export function CreateOrUpdatePostModalForm({
           value="on"
           classNames={{
             label: "font-medium",
+            root: "mt-4",
           }}
           defaultChecked={postData?.isProtected ?? false}
           error={actionState?.error?.isProtected}
