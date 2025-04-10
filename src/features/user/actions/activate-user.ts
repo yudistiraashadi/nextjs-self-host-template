@@ -1,7 +1,7 @@
 "use server";
 
-import { auth } from "@/auth";
 import { authGuard } from "@/features/user/guards/auth-guard";
+import { auth } from "@/lib/auth";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 

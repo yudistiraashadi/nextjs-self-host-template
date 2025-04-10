@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
