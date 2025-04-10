@@ -177,8 +177,8 @@ export function PostsTable() {
             <Image
               src={row.original.image}
               alt={row.original.title}
-              width={100}
-              height={75}
+              width={250}
+              height={250}
               style={{ objectFit: "cover" }}
             />
           ) : null,

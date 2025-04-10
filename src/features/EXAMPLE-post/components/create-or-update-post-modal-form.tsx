@@ -15,6 +15,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import { startTransition, useActionState, useEffect, useState } from "react";
 
 export function CreateOrUpdatePostModalForm({
@@ -30,7 +31,10 @@ export function CreateOrUpdatePostModalForm({
 }) {
   const queryClient = useQueryClient();
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(
+    postData?.image || null,
+  );
+  console.log(postData?.image);
 
   // CREATE OR UPDATE POST
   const [actionState, actionDispatch, isActionPending] = useActionState(
@@ -81,6 +85,13 @@ export function CreateOrUpdatePostModalForm({
       reader.readAsDataURL(imageFile);
     }
   }, [imageFile]);
+
+  // Update image preview when postData changes
+  useEffect(() => {
+    if (postData?.image) {
+      setImagePreviewUrl(postData.image);
+    }
+  }, [postData]);
 
   return (
     <Modal
@@ -148,9 +159,11 @@ export function CreateOrUpdatePostModalForm({
 
         {imagePreviewUrl && (
           <div className="relative h-40 w-full max-w-md overflow-hidden rounded border border-gray-300">
-            <img
+            <Image
               src={imagePreviewUrl}
               alt={postData?.title || "Post image preview"}
+              width={400}
+              height={400}
               className="h-full w-full object-cover"
             />
           </div>
