@@ -40,9 +40,6 @@ export type GetUserListResponse = Awaited<ReturnType<typeof getUserList>>;
 
 export const getUserList = cache(
   createParallelAction(async (params: SearchParams = {}) => {
-    // add 3 seconds delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const {
       search,
       page = 1,

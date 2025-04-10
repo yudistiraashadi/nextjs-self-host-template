@@ -20,9 +20,6 @@ export type GetUserListCountResponse = Awaited<
 
 export const getUserListCount = cache(
   createParallelAction(async (params: CountSearchParams = {}) => {
-    // add 3 seconds delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const { search } = paramsSchema.parse(params);
 
     const db = createDrizzleConnection();
