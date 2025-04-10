@@ -59,11 +59,14 @@ export async function updatePost(prevState: any, formData: FormData) {
       // Use the post ID as the filename
       const fileKey = validationResult.data.id + originalFileExtension;
 
+      // Convert file to buffer before uploading
+      const fileBuffer = await validationResult.data.image.arrayBuffer();
+
       await s3Client.send(
         new PutObjectCommand({
           Bucket: "post",
           Key: fileKey,
-          Body: validationResult.data.image,
+          Body: Buffer.from(fileBuffer),
           ContentType: validationResult.data.image.type,
         }),
       );

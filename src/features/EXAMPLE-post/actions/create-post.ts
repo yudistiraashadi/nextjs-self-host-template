@@ -56,11 +56,14 @@ export async function createPost(prevState: any, formData: FormData) {
         );
         const s3Client = getS3Client();
 
+        // Convert file to buffer before uploading
+        const fileBuffer = await validationResult.data.image.arrayBuffer();
+
         await s3Client.send(
           new PutObjectCommand({
             Bucket: "post",
             Key: currentId + originalFileExtension,
-            Body: validationResult.data.image,
+            Body: Buffer.from(fileBuffer),
             ContentType: validationResult.data.image.type,
           }),
         );
