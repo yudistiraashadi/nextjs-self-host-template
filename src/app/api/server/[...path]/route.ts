@@ -6,19 +6,19 @@ import "@/server-api/api-imports";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ all: string[] }> },
+  { params }: { params: Promise<{ path: string[] }> },
 ) {
-  const { all } = await params;
+  const { path } = await params;
 
   // Reconstruct the path from the segments
-  const path = `/${all.join("/")}`;
+  const joinedPath = `/${path.join("/")}`;
 
   // Find the handler for this path
-  const handler = apiRegistry.getHandler(path);
+  const handler = apiRegistry.getHandler(joinedPath);
 
   if (!handler) {
     return NextResponse.json(
-      { error: `No handler found for path: ${path}` },
+      { error: `No handler found for path: ${joinedPath}` },
       { status: 404 },
     );
   }
