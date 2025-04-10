@@ -15,7 +15,7 @@ export async function updatePost(prevState: any, formData: FormData) {
     id: zfd.text(z.string().uuid()),
     title: zfd.text(z.string().min(1).max(100)),
     content: zfd.text(z.string().min(1).max(1000)),
-    isProtected: zfd.numeric(z.number().min(0).max(1)),
+    isProtected: zfd.checkbox(),
     image: zfd.file().optional(),
   });
 
@@ -87,7 +87,7 @@ export async function updatePost(prevState: any, formData: FormData) {
       const updateData: any = {
         title: validationResult.data.title,
         content: validationResult.data.content,
-        isProtected: validationResult.data.isProtected === 1,
+        isProtected: validationResult.data.isProtected,
       };
 
       // Only update the image if a new one was uploaded
