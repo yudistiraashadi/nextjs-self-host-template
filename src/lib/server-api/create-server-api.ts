@@ -7,9 +7,9 @@ type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 interface CreateServerApiOptions<TInput, TOutput> {
   /**
-   * The server action to wrap
+   * The function to wrap
    */
-  action: (input: TInput) => Promise<TOutput>;
+  function: (input: TInput) => Promise<TOutput>;
   /**
    * The path for the API endpoint
    * @example "/users/get-by-id"
@@ -22,15 +22,15 @@ interface CreateServerApiOptions<TInput, TOutput> {
 }
 
 /**
- * Creates a server API endpoint from a server action and automatically registers it
+ * Creates a server API endpoint from a function and automatically registers it
  * @example
  * ```ts
  * // src/features/user/actions/get-user-by-id/index.ts
- * import { createServerApi } from "@/lib/utils/create-server-api";
+ * import { createServerApi } from "@/lib/server-api/create-server-api";
  * import { z } from "zod";
  *
  * const { api: getUserById } = createServerApi<GetUserByIdParams, GetUserByIdResponse>({
- *   action: async (params) => {
+ *   function: async (params) => {
  *     // ... implementation
  *   },
  *   path: "/users/get-by-id",
@@ -41,7 +41,7 @@ interface CreateServerApiOptions<TInput, TOutput> {
  * ```
  */
 export function createServerApi<TInput, TOutput>({
-  action,
+  function: fn,
   path,
   inputSchema,
 }: CreateServerApiOptions<TInput, TOutput>) {
@@ -81,8 +81,8 @@ export function createServerApi<TInput, TOutput>({
         input = result.data;
       }
 
-      // Execute the server action
-      const output = await action(input as TInput);
+      // Execute the server function
+      const output = await fn(input as TInput);
 
       return NextResponse.json(output);
     } catch (error: any) {
@@ -97,18 +97,11 @@ export function createServerApi<TInput, TOutput>({
   // Register the handler
   apiRegistry.register(path, handler);
 
-  // Create the cached client-side API function
-  const api = cache(async (input: TInput) => {
+  // Create and return the cached client-side API function
+  return cache(async (input: TInput) => {
     return (await fetch(`/api${path}`, {
       method: "POST",
       body: JSON.stringify(input),
     }).then((res) => res.json())) as TOutput;
   });
-
-  // Return both the server action and the client-side API function
-  return {
-    action,
-    endpoint: path,
-    api,
-  };
 }

@@ -5,9 +5,11 @@ import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
 export type GetUserByIdParams = { id: string };
-export type GetUserByIdResponse = Awaited<ReturnType<typeof getUserByIdAction>>;
+export type GetUserByIdResponse = Awaited<
+  ReturnType<typeof getUserByIdFunction>
+>;
 
-async function getUserByIdAction(params: GetUserByIdParams) {
+async function getUserByIdFunction(params: GetUserByIdParams) {
   const db = createDrizzleConnection();
 
   return await db
@@ -18,11 +20,11 @@ async function getUserByIdAction(params: GetUserByIdParams) {
     .then((res) => res[0]);
 }
 
-export const { api: getUserById } = createServerApi<
+export const getUserById = createServerApi<
   GetUserByIdParams,
   GetUserByIdResponse
 >({
-  action: getUserByIdAction,
+  function: getUserByIdFunction,
   path: "/user/get-user-by-id",
   inputSchema: z.object({
     id: z.string(),

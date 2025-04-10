@@ -1,5 +1,3 @@
-"use server";
-
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { createServerApi } from "@/lib/server-api/create-server-api";
@@ -34,9 +32,11 @@ const paramsSchema = z.object({
     .optional(),
 });
 
-export type GetUserListResponse = Awaited<ReturnType<typeof getUserListAction>>;
+export type GetUserListResponse = Awaited<
+  ReturnType<typeof getUserListFunction>
+>;
 
-async function getUserListAction(params: GetUserListParams = {}) {
+async function getUserListFunction(params: GetUserListParams = {}) {
   const {
     search,
     page = 1,
@@ -128,11 +128,11 @@ async function getUserListAction(params: GetUserListParams = {}) {
   return await applySorting(query);
 }
 
-export const { api: getUserList } = createServerApi<
+export const getUserList = createServerApi<
   GetUserListParams,
   GetUserListResponse
 >({
-  action: getUserListAction,
+  function: getUserListFunction,
   path: "/user/get-user-list",
   inputSchema: paramsSchema,
 });

@@ -1,5 +1,3 @@
-"use server";
-
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { type GetUserListParams } from "@/features/user/actions/get-user-list";
@@ -17,10 +15,10 @@ const paramsSchema = z.object({
 });
 
 export type GetUserListCountResponse = Awaited<
-  ReturnType<typeof getUserListCountAction>
+  ReturnType<typeof getUserListCountFunction>
 >;
 
-async function getUserListCountAction(params: GetUserListCountParams = {}) {
+async function getUserListCountFunction(params: GetUserListCountParams = {}) {
   const { search } = paramsSchema.parse(params);
 
   const db = createDrizzleConnection();
@@ -45,11 +43,11 @@ async function getUserListCountAction(params: GetUserListCountParams = {}) {
   return total;
 }
 
-export const { api: getUserListCount } = createServerApi<
+export const getUserListCount = createServerApi<
   GetUserListCountParams,
   GetUserListCountResponse
 >({
-  action: getUserListCountAction,
+  function: getUserListCountFunction,
   path: "/user/get-user-list-count",
   inputSchema: paramsSchema,
 });
