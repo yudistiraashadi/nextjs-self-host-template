@@ -5,16 +5,9 @@ import { user as userTable } from "@/db/drizzle/schema";
 import { and, desc, eq, ilike, isNull, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import { type GetUserListParams } from ".";
-import { getUserListParamsSchema } from "./util";
 
 export async function getUserListFunction(params: GetUserListParams = {}) {
-  const {
-    search,
-    page = 1,
-    pageSize = 10,
-    columnFilters,
-    sorting,
-  } = getUserListParamsSchema.parse(params);
+  const { search, page = 1, pageSize = 10, columnFilters, sorting } = params;
 
   const db = createDrizzleConnection();
 

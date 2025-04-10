@@ -2,14 +2,13 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
-import { getPostListCountParamsSchema } from "@/features/EXAMPLE-post/actions/get-post-list-count/util";
 import { and, count, eq, ilike, or, SQL } from "drizzle-orm";
-import { type GetPostListCountParams } from "./index";
+import { type GetPostListCountParams } from ".";
 
 export async function getPostListCountFunction(
   params: GetPostListCountParams = {},
 ) {
-  const { search, columnFilters } = getPostListCountParamsSchema.parse(params);
+  const { search, columnFilters } = params;
 
   const db = createDrizzleConnection();
 

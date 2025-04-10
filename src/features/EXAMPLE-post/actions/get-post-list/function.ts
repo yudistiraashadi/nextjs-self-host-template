@@ -2,19 +2,12 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
-import { getPostListParamsSchema } from "@/features/EXAMPLE-post/actions/get-post-list/util";
 import { and, desc, eq, ilike, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import { type GetPostListParams } from "./index";
 
 export async function getPostListFunction(params: GetPostListParams = {}) {
-  const {
-    search,
-    page = 1,
-    pageSize = 10,
-    columnFilters,
-    sorting,
-  } = getPostListParamsSchema.parse(params);
+  const { search, page = 1, pageSize = 10, columnFilters, sorting } = params;
 
   const db = createDrizzleConnection();
 

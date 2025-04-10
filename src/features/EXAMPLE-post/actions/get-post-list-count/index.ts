@@ -1,12 +1,18 @@
-import { type GetPostListParams } from "@/features/EXAMPLE-post/actions/get-post-list";
-import { getPostListCountParamsSchema } from "@/features/EXAMPLE-post/actions/get-post-list-count/util";
+import { postListValidColumns } from "@/features/EXAMPLE-post/actions/get-post-list";
 import { createServerApi } from "@/server-api/create-server-api";
 import { queryOptions } from "@tanstack/react-query";
+import { z } from "zod";
 import { getPostListCountFunction } from "./function";
 
-export type GetPostListCountParams = Pick<
-  GetPostListParams,
-  "search" | "columnFilters"
+const getPostListCountParamsSchema = z.object({
+  search: z.string().optional(),
+  columnFilters: z
+    .array(z.object({ id: z.enum(postListValidColumns), value: z.string() }))
+    .optional(),
+});
+
+export type GetPostListCountParams = z.input<
+  typeof getPostListCountParamsSchema
 >;
 
 export type GetPostListCountResponse = Awaited<

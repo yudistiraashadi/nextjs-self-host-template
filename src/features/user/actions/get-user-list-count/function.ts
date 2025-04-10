@@ -4,12 +4,11 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { and, count, eq, ilike, isNull, or, type SQL } from "drizzle-orm";
 import { type GetUserListCountParams } from ".";
-import { getUserListCountParamsSchema } from "./util";
 
 export async function getUserListCountFunction(
   params: GetUserListCountParams = {},
 ) {
-  const { search, columnFilters } = getUserListCountParamsSchema.parse(params);
+  const { search, columnFilters } = params;
 
   const db = createDrizzleConnection();
 
