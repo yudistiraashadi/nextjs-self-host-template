@@ -3,8 +3,6 @@ import { cache } from "react";
 import { z } from "zod";
 import { apiRegistry } from "./api-registry";
 
-type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
 interface CreateServerApiOptions<TInput, TOutput> {
   /**
    * The function to wrap
@@ -22,14 +20,14 @@ interface CreateServerApiOptions<TInput, TOutput> {
 }
 
 /**
- * Creates a server API endpoint from a function and automatically registers it
+ * Creates a server API endpoint from a server function and automatically registers it
  * @example
  * ```ts
  * // src/features/user/actions/get-user-by-id/index.ts
  * import { createServerApi } from "@/lib/server-api/create-server-api";
  * import { z } from "zod";
  *
- * const { api: getUserById } = createServerApi<GetUserByIdParams, GetUserByIdResponse>({
+ * export const getUserById = createServerApi<GetUserByIdParams, GetUserByIdResponse>({
  *   function: async (params) => {
  *     // ... implementation
  *   },
@@ -99,7 +97,7 @@ export function createServerApi<TInput, TOutput>({
 
   // Create and return the cached client-side API function
   return cache(async (input: TInput) => {
-    return (await fetch(`/api${path}`, {
+    return (await fetch(`/api/server${path}`, {
       method: "POST",
       body: JSON.stringify(input),
     }).then((res) => res.json())) as TOutput;

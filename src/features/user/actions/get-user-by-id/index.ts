@@ -1,32 +1,35 @@
-import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { user } from "@/db/drizzle/schema";
 import { createServerApi } from "@/lib/server-api/create-server-api";
-import { and, eq, ne } from "drizzle-orm";
+import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
+import { getUserByIdFunction } from "./function";
+
+const apiPath = "/user/get-user-by-id";
 
 export type GetUserByIdParams = { id: string };
 export type GetUserByIdResponse = Awaited<
   ReturnType<typeof getUserByIdFunction>
 >;
 
-async function getUserByIdFunction(params: GetUserByIdParams) {
-  const db = createDrizzleConnection();
-
-  return await db
-    .select()
-    .from(user)
-    .where(and(eq(user.id, params.id), ne(user.banned, true)))
-    .limit(1)
-    .then((res) => res[0]);
-}
-
+// SERVER API
 export const getUserById = createServerApi<
   GetUserByIdParams,
   GetUserByIdResponse
 >({
   function: getUserByIdFunction,
-  path: "/user/get-user-by-id",
+  path: apiPath,
   inputSchema: z.object({
     id: z.string(),
   }),
 });
+
+// TANSTACK QUERY OPTIONS
+export const getUserByIdQueryOptions = (params: GetUserByIdParams) =>
+  queryOptions({
+    queryKey: [
+      "user",
+      {
+        id: params.id,
+      },
+    ],
+    queryFn: () => getUserById(params),
+  });

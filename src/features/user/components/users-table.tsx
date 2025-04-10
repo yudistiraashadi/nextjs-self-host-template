@@ -3,13 +3,13 @@
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { activateUser } from "@/features/user/actions/activate-user";
 import { deactivateUser } from "@/features/user/actions/deactivate-user";
-import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
+import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id";
 import {
+  getUserListQueryOptions,
   type GetUserListParams,
   type GetUserListResponse,
 } from "@/features/user/actions/get-user-list";
-import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count/query-options";
-import { getUserListQueryOptions } from "@/features/user/actions/get-user-list/query-options";
+import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count";
 import { CreateOrUpdateUserModalForm } from "@/features/user/components/create-or-update-user-modal-form";
 import { userRoleBadgeColor } from "@/features/user/constants";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";

@@ -1,12 +1,17 @@
 import { apiRegistry } from "@/lib/server-api/api-registry";
 import { NextRequest, NextResponse } from "next/server";
 
+// Import this file to ensure all API functions are registered
+import "@/lib/server-api/api-imports";
+
 export async function POST(
   req: NextRequest,
-  context: { params: { all: string[] } },
+  { params }: { params: Promise<{ all: string[] }> },
 ) {
+  const { all } = await params;
+
   // Reconstruct the path from the segments
-  const path = `/${context.params.all.join("/")}`;
+  const path = `/${all.join("/")}`;
 
   // Find the handler for this path
   const handler = apiRegistry.getHandler(path);
@@ -18,5 +23,5 @@ export async function POST(
     );
   }
 
-  return handler(req, context);
+  return handler(req, { params });
 }

@@ -1,6 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count/query-options";
-import { getUserListQueryOptions } from "@/features/user/actions/get-user-list/query-options";
+import { getUserListQueryOptions } from "@/features/user/actions/get-user-list";
+import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count";
 import { UsersTable } from "@/features/user/components/users-table";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { getQueryClient } from "@/lib/tanstack-query/get-query-client";
@@ -24,8 +24,6 @@ export default async function AdminUser() {
 
   const queryClient = getQueryClient();
 
-  console.time("WKKWKW");
-
   await Promise.allSettled([
     queryClient.prefetchQuery(
       getUserListQueryOptions({
@@ -41,8 +39,6 @@ export default async function AdminUser() {
       }),
     ),
   ]);
-
-  console.timeEnd("WKKWKW");
 
   return (
     <DashboardSectionContainer>

@@ -1,10 +1,14 @@
 "use server";
 
 import { auth } from "@/auth";
+import { authGuard } from "@/features/user/guards/auth-guard";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 export async function createUser(prevState: any, formData: FormData) {
+  // AUTH GUARD
+  authGuard(["admin"]);
+
   // VALIDATION
   const validationRules = z.object({
     name: zfd.text(z.string().min(1).max(100)),

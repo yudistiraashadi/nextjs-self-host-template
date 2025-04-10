@@ -1,7 +1,7 @@
 "use client";
 
 import { createUser } from "@/features/user/actions/create-user";
-import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
+import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id";
 import type { GetUserListResponse } from "@/features/user/actions/get-user-list";
 import { updateUser } from "@/features/user/actions/update-user";
 import { userRole } from "@/features/user/constants";
