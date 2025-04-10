@@ -2,9 +2,10 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
+import { getPostListParamsSchema } from "@/features/EXAMPLE-post/actions/get-post-list/util";
 import { and, desc, eq, ilike, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
-import { getPostListParamsSchema, type GetPostListParams } from "./index";
+import { type GetPostListParams } from "./index";
 
 export async function getPostListFunction(params: GetPostListParams = {}) {
   const {

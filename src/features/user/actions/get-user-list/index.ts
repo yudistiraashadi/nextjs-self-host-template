@@ -1,14 +1,7 @@
 import { createServerApi } from "@/server-api/create-server-api";
 import { queryOptions } from "@tanstack/react-query";
-import { z } from "zod";
 import { getUserListFunction } from "./function";
-
-export const userListValidColumns = [
-  "name",
-  "email",
-  "role",
-  "status",
-] as const;
+import { getUserListParamsSchema, userListValidColumns } from "./util";
 
 export type GetUserListParams = {
   search?: string;
@@ -23,18 +16,6 @@ export type GetUserListParams = {
     desc: boolean;
   }[];
 };
-
-export const getUserListParamsSchema = z.object({
-  search: z.string().optional(),
-  page: z.coerce.number().positive().default(1),
-  pageSize: z.coerce.number().positive().default(10),
-  columnFilters: z
-    .array(z.object({ id: z.enum(userListValidColumns), value: z.string() }))
-    .optional(),
-  sorting: z
-    .array(z.object({ id: z.enum(userListValidColumns), desc: z.boolean() }))
-    .optional(),
-});
 
 export type GetUserListResponse = Awaited<
   ReturnType<typeof getUserListFunction>

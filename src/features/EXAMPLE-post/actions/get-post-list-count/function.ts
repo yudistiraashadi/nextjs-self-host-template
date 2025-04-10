@@ -2,11 +2,9 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
+import { getPostListCountParamsSchema } from "@/features/EXAMPLE-post/actions/get-post-list-count/util";
 import { and, count, eq, ilike, or, SQL } from "drizzle-orm";
-import {
-  getPostListCountParamsSchema,
-  type GetPostListCountParams,
-} from "./index";
+import { type GetPostListCountParams } from "./index";
 
 export async function getPostListCountFunction(
   params: GetPostListCountParams = {},

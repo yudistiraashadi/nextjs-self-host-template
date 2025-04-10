@@ -3,7 +3,8 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { and, count, eq, ilike, isNull, or, type SQL } from "drizzle-orm";
-import { type GetUserListCountParams, getUserListCountParamsSchema } from ".";
+import { type GetUserListCountParams } from ".";
+import { getUserListCountParamsSchema } from "./util";
 
 export async function getUserListCountFunction(
   params: GetUserListCountParams = {},

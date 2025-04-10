@@ -60,7 +60,7 @@ export function createServerApi<TInput, TOutput>({
         // Parse JSON body
         const body = await req.json();
         input = body;
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { error: "Invalid JSON body" },
           { status: 400 },

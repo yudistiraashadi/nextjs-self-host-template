@@ -1,23 +1,13 @@
-import {
-  userListValidColumns,
-  type GetUserListParams,
-} from "@/features/user/actions/get-user-list";
+import { type GetUserListParams } from "@/features/user/actions/get-user-list";
+import { getUserListCountParamsSchema } from "@/features/user/actions/get-user-list-count/util";
 import { createServerApi } from "@/server-api/create-server-api";
 import { queryOptions } from "@tanstack/react-query";
-import { z } from "zod";
 import { getUserListCountFunction } from "./function";
 
 export type GetUserListCountParams = Pick<
   GetUserListParams,
   "search" | "columnFilters"
 >;
-
-export const getUserListCountParamsSchema = z.object({
-  search: z.string().optional(),
-  columnFilters: z
-    .array(z.object({ id: z.enum(userListValidColumns), value: z.string() }))
-    .optional(),
-});
 
 export type GetUserListCountResponse = Awaited<
   ReturnType<typeof getUserListCountFunction>
