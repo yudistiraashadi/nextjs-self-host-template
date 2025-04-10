@@ -2,6 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { posts } from "@/db/drizzle/schema";
+import { getMediaUrl } from "@/lib/utils/s3-storage";
 import { and, desc, eq, ilike, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import { type GetPostListParams } from "./index";
@@ -74,5 +75,18 @@ export async function getPostListFunction(params: GetPostListParams = {}) {
     .offset((page - 1) * pageSize)
     .$dynamic();
 
-  return await applySorting(query);
+  const results = await applySorting(query);
+
+  // Convert image paths to URLs
+  const postsWithImageUrls = await Promise.all(
+    results.map(async (post) => ({
+      ...post,
+      image: await getMediaUrl(post.image, {
+        isPrivate: true,
+        expiresIn: 3600,
+      }),
+    })),
+  );
+
+  return postsWithImageUrls;
 }

@@ -24,6 +24,7 @@ import {
   type MRT_ColumnDef,
   type MRT_PaginationState,
 } from "mantine-react-table";
+import Image from "next/image";
 import {
   useActionState,
   useCallback,
@@ -165,6 +166,22 @@ export function PostsTable() {
         accessorKey: "content",
         header: "Content",
         filterFn: "contains",
+      },
+      {
+        accessorKey: "image",
+        header: "Image",
+        filterFn: "contains",
+        enableColumnFilter: false,
+        Cell: ({ row }) =>
+          row.original.image ? (
+            <Image
+              src={row.original.image}
+              alt={row.original.title}
+              width={100}
+              height={75}
+              style={{ objectFit: "cover" }}
+            />
+          ) : null,
       },
       {
         accessorKey: "createdAt",

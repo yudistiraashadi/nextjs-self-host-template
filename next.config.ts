@@ -16,16 +16,16 @@ const nextConfig: NextConfig = {
   }),
   // allow images from outside the domain
   // ref: https://nextjs.org/docs/messages/next-image-unconfigured-host
-  //  images: {
-  //   remotePatterns: [
-  //     {
-  //       protocol: "https",
-  //       hostname: "utebebrolnerwfsiioep.supabase.co",
-  //       port: "",
-  //       pathname: "/**",
-  //     },
-  //   ],
-  // },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "9000",
+        pathname: "/**",
+      },
+    ],
+  },
   cacheHandler:
     process.env.NODE_ENV === "production"
       ? require.resolve("./cache-handler.mjs")

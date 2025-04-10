@@ -1,5 +1,6 @@
 import { env } from "@/env";
-import { S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export function getStorageBucketAndPath(fullPath: string) {
   const [bucket, ...path] = fullPath.split("/");
@@ -23,4 +24,44 @@ export function getS3Client({
     },
     forcePathStyle: true, // Required for most MinIO
   });
+}
+
+/**
+ * Converts a stored image path to a URL
+ * @param imagePath - The image path stored in the database (e.g., "post/123-abc.jpg")
+ * @param options - Configuration options
+ * @param options.isPrivate - Whether the file is in a private bucket requiring authentication (default: true)
+ * @param options.expiresIn - Expiration time in seconds for signed URLs (default: 3600 = 1 hour)
+ * @returns A URL for the image (signed URL for private files, direct URL for public files)
+ */
+export async function getMediaUrl(
+  imagePath: string | null | undefined,
+  options?: {
+    isPrivate?: boolean;
+    expiresIn?: number;
+  },
+): Promise<string | null> {
+  if (!imagePath) return null;
+
+  const { isPrivate = true, expiresIn = 3600 } = options || {};
+  const { bucket, path } = getStorageBucketAndPath(imagePath);
+
+  // For public files, return a direct URL
+  if (!isPrivate) {
+    return `${S3_ENDPOINT}/${bucket}/${path}`;
+  }
+
+  // For private files, generate a signed URL
+  const s3Client = getS3Client();
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: path,
+  });
+
+  try {
+    return await getSignedUrl(s3Client, command, { expiresIn });
+  } catch (error) {
+    console.error("Error generating signed URL:", error);
+    return null;
+  }
 }
