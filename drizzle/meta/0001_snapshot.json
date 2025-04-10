@@ -1,5 +1,5 @@
 {
-  "id": "d1d06049-a807-4620-9813-fb4a0d9e3fa3",
+  "id": "3fa717f6-8f31-4fd3-bc78-8687f04a3866",
   "prevId": "6c8f12eb-c578-4480-9bd0-36f2c42a1b1d",
   "version": "7",
   "dialect": "postgresql",
@@ -117,7 +117,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },

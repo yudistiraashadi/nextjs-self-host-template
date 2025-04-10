@@ -1,5 +1,5 @@
 CREATE TABLE "EXAMPLE_posts" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
 	"content" text NOT NULL,
 	"image" text,

@@ -1,4 +1,5 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { v7 as uuidv7 } from "uuid";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -77,7 +78,7 @@ export const verification = pgTable("verification", {
 
 // EXAMPLE TABLE - posts. TODO: Remove this
 export const posts = pgTable("EXAMPLE_posts", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(uuidv7),
   title: text("title").notNull(),
   content: text("content").notNull(),
   image: text("image"),
