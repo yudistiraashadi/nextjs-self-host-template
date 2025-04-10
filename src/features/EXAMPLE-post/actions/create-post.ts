@@ -10,7 +10,7 @@ export async function createPost(prevState: any, formData: FormData) {
   const validationRules = z.object({
     title: zfd.text(z.string().min(1).max(100)),
     content: zfd.text(z.string().min(1).max(1000)),
-    isProtected: zfd.numeric(z.number().min(0).max(1)),
+    isProtected: zfd.checkbox(),
   });
 
   const validationResult = await zfd
@@ -43,7 +43,7 @@ export async function createPost(prevState: any, formData: FormData) {
       await tx.insert(posts).values({
         title: validationResult.data.title,
         content: validationResult.data.content,
-        isProtected: validationResult.data.isProtected === 1,
+        isProtected: validationResult.data.isProtected,
       });
     });
   } catch (error: Error | any) {

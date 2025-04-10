@@ -162,8 +162,8 @@ export function PostsTable() {
         filterFn: "contains",
       },
       {
-        accessorKey: "authorName",
-        header: "Author",
+        accessorKey: "content",
+        header: "Content",
         filterFn: "contains",
       },
       {
@@ -212,7 +212,7 @@ export function PostsTable() {
               Edit
             </Button>
             <Button
-              color="yellow"
+              color="red"
               onClick={() => renderDeletePostModal(row.original.id)}
             >
               Delete
@@ -229,8 +229,6 @@ export function PostsTable() {
       queryResult: postListQuery,
     }),
     columns,
-    enableRowNumbers: true,
-    rowNumberDisplayMode: "original",
     data: postListQuery.data ?? [],
     manualPagination: true,
     manualFiltering: true,

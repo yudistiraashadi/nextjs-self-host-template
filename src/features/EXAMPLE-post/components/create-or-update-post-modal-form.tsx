@@ -6,14 +6,7 @@ import type { GetPostListResponse } from "@/features/EXAMPLE-post/actions/get-po
 import { updatePost } from "@/features/EXAMPLE-post/actions/update-post";
 import { useEffectEvent } from "@/lib/hooks/use-effect-event";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Modal,
-  Textarea,
-  TextInput,
-} from "@mantine/core";
+import { Button, Checkbox, Modal, Textarea, TextInput } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
 
@@ -84,6 +77,11 @@ export function CreateOrUpdatePostModalForm({
           startTransition(() => {
             const formData = new FormData(e.currentTarget);
 
+            // print form data
+            for (const [key, value] of formData.entries()) {
+              console.log(key, value);
+            }
+
             if (postData) {
               formData.append("id", postData.id);
             }
@@ -112,14 +110,16 @@ export function CreateOrUpdatePostModalForm({
           minRows={5}
         />
 
-        <Divider />
-
         {/* isProtected */}
         <Checkbox
           label="Protected Post"
           name="isProtected"
-          value="1"
+          value="on"
+          classNames={{
+            label: "font-medium",
+          }}
           defaultChecked={postData?.isProtected ?? false}
+          error={actionState?.error?.isProtected}
         />
 
         <div className="mt-12 flex justify-end">
