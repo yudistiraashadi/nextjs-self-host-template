@@ -1,4 +1,4 @@
-import { createServerApi } from "@/lib/server-api/create-server-api";
+import { createServerApi } from "@/server-api/create-server-api";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { getUserListFunction } from "./function";
