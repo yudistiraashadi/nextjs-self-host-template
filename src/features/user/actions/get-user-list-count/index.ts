@@ -3,6 +3,7 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { type SearchParams } from "@/features/user/actions/get-user-list";
+import { createParallelAction } from "@/lib/utils/next-server-action-parallel";
 import { count, ilike, or } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
@@ -18,7 +19,10 @@ export type GetUserListCountResponse = Awaited<
 >;
 
 export const getUserListCount = cache(
-  async (params: CountSearchParams = {}) => {
+  createParallelAction(async (params: CountSearchParams = {}) => {
+    // add 3 seconds delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const { search } = paramsSchema.parse(params);
 
     const db = createDrizzleConnection();
@@ -41,5 +45,5 @@ export const getUserListCount = cache(
     const total = Number(totalResult[0]?.count) || 0;
 
     return total;
-  },
+  }),
 );

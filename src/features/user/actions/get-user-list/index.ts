@@ -2,6 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
+import { createParallelAction } from "@/lib/utils/next-server-action-parallel";
 import { and, desc, eq, ilike, isNull, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import { cache } from "react";
@@ -37,94 +38,99 @@ const paramsSchema = z.object({
 
 export type GetUserListResponse = Awaited<ReturnType<typeof getUserList>>;
 
-export const getUserList = cache(async (params: SearchParams = {}) => {
-  const {
-    search,
-    page = 1,
-    pageSize = 10,
-    columnFilters,
-    sorting,
-  } = paramsSchema.parse(params);
+export const getUserList = cache(
+  createParallelAction(async (params: SearchParams = {}) => {
+    // add 3 seconds delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const db = createDrizzleConnection();
+    const {
+      search,
+      page = 1,
+      pageSize = 10,
+      columnFilters,
+      sorting,
+    } = paramsSchema.parse(params);
 
-  // Build the search conditions
-  const searchCondition = search
-    ? or(
-        ilike(userTable.name, `%${search}%`),
-        ilike(userTable.email, `%${search}%`),
-        ilike(userTable.role, `%${search}%`),
-      )
-    : undefined;
+    const db = createDrizzleConnection();
 
-  // Build column filter conditions
-  const whereConditions: SQL<unknown>[] = [];
+    // Build the search conditions
+    const searchCondition = search
+      ? or(
+          ilike(userTable.name, `%${search}%`),
+          ilike(userTable.email, `%${search}%`),
+          ilike(userTable.role, `%${search}%`),
+        )
+      : undefined;
 
-  if (searchCondition) {
-    whereConditions.push(searchCondition);
-  }
+    // Build column filter conditions
+    const whereConditions: SQL<unknown>[] = [];
 
-  if (columnFilters && columnFilters.length > 0) {
-    for (const filter of columnFilters) {
-      if (filter.id === "status") {
-        // For status, check the banned field
-        const isActive = String(filter.value) === "Active";
+    if (searchCondition) {
+      whereConditions.push(searchCondition);
+    }
 
-        if (isActive) {
-          whereConditions.push(
-            or(
-              eq(userTable.banned, false),
-              isNull(userTable.banned),
-            ) as SQL<unknown>,
-          );
+    if (columnFilters && columnFilters.length > 0) {
+      for (const filter of columnFilters) {
+        if (filter.id === "status") {
+          // For status, check the banned field
+          const isActive = String(filter.value) === "Active";
+
+          if (isActive) {
+            whereConditions.push(
+              or(
+                eq(userTable.banned, false),
+                isNull(userTable.banned),
+              ) as SQL<unknown>,
+            );
+          } else {
+            whereConditions.push(eq(userTable.banned, true));
+          }
         } else {
-          whereConditions.push(eq(userTable.banned, true));
+          const column = filter.id as "name" | "email" | "role";
+          whereConditions.push(
+            ilike(userTable[column], `%${String(filter.value)}%`),
+          );
         }
-      } else {
-        const column = filter.id as "name" | "email" | "role";
-        whereConditions.push(
-          ilike(userTable[column], `%${String(filter.value)}%`),
-        );
-      }
-    }
-  }
-
-  // Determine the sorting configuration
-  const applySorting = (query: PgSelect) => {
-    if (sorting && sorting.length > 0) {
-      const sortItem = sorting[0];
-
-      if (sortItem.id === "name") {
-        return sortItem.desc
-          ? query.orderBy(desc(userTable.name))
-          : query.orderBy(userTable.name);
-      } else if (sortItem.id === "email") {
-        return sortItem.desc
-          ? query.orderBy(desc(userTable.email))
-          : query.orderBy(userTable.email);
-      } else if (sortItem.id === "role") {
-        return sortItem.desc
-          ? query.orderBy(desc(userTable.role))
-          : query.orderBy(userTable.role);
-      } else if (sortItem.id === "status") {
-        return sortItem.desc
-          ? query.orderBy(desc(userTable.banned))
-          : query.orderBy(userTable.banned);
       }
     }
 
-    // Default sorting
-    return query.orderBy(desc(userTable.createdAt));
-  };
+    // Determine the sorting configuration
+    const applySorting = (query: PgSelect) => {
+      if (sorting && sorting.length > 0) {
+        const sortItem = sorting[0];
 
-  // Execute the query
-  const query = db
-    .select()
-    .from(userTable)
-    .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-    .limit(pageSize)
-    .offset((page - 1) * pageSize)
-    .$dynamic();
+        if (sortItem.id === "name") {
+          return sortItem.desc
+            ? query.orderBy(desc(userTable.name))
+            : query.orderBy(userTable.name);
+        } else if (sortItem.id === "email") {
+          return sortItem.desc
+            ? query.orderBy(desc(userTable.email))
+            : query.orderBy(userTable.email);
+        } else if (sortItem.id === "role") {
+          return sortItem.desc
+            ? query.orderBy(desc(userTable.role))
+            : query.orderBy(userTable.role);
+        } else if (sortItem.id === "status") {
+          return sortItem.desc
+            ? query.orderBy(desc(userTable.banned))
+            : query.orderBy(userTable.banned);
+        }
+      }
 
-  return await applySorting(query);
-});
+      // Default sorting
+      return query.orderBy(desc(userTable.createdAt));
+    };
+
+    // Execute the query
+    const query = db
+      .select()
+      .from(userTable)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize)
+      .$dynamic();
+
+    return await applySorting(query);
+  }),
+);

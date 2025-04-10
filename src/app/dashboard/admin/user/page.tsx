@@ -24,15 +24,25 @@ export default async function AdminUser() {
 
   const queryClient = getQueryClient();
 
-  const defaultUserListParams = {
-    page: 1,
-    pageSize: 10,
-  };
+  console.time("WKKWKW");
 
   await Promise.allSettled([
-    queryClient.prefetchQuery(getUserListQueryOptions(defaultUserListParams)),
-    queryClient.prefetchQuery(getUserListCountQueryOptions()),
+    queryClient.prefetchQuery(
+      getUserListQueryOptions({
+        page: 1,
+        pageSize: 10,
+        columnFilters: [],
+        sorting: [],
+      }),
+    ),
+    queryClient.prefetchQuery(
+      getUserListCountQueryOptions({
+        columnFilters: [],
+      }),
+    ),
   ]);
+
+  console.timeEnd("WKKWKW");
 
   return (
     <DashboardSectionContainer>
