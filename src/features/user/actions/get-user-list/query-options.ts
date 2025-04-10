@@ -1,9 +1,8 @@
-import { runParallelAction } from "@/lib/utils/next-server-action-parallel";
 import { queryOptions } from "@tanstack/react-query";
-import { getUserList, type SearchParams } from ".";
+import { getUserList, type GetUserListParams } from ".";
 
-export const getUserListQueryOptions = (params: SearchParams = {}) =>
+export const getUserListQueryOptions = (params: GetUserListParams = {}) =>
   queryOptions({
     queryKey: ["user", "list", params],
-    queryFn: () => runParallelAction(getUserList(params)),
+    queryFn: () => getUserList(params),
   });

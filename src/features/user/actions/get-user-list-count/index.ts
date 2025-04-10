@@ -2,45 +2,54 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
-import { type SearchParams } from "@/features/user/actions/get-user-list";
-import { createParallelAction } from "@/lib/utils/next-server-action-parallel";
+import { type GetUserListParams } from "@/features/user/actions/get-user-list";
+import { createServerApi } from "@/lib/server-api/create-server-api";
 import { count, ilike, or } from "drizzle-orm";
-import { cache } from "react";
 import { z } from "zod";
 
-export type CountSearchParams = Omit<SearchParams, "page" | "pageSize">;
+export type GetUserListCountParams = Omit<
+  GetUserListParams,
+  "page" | "pageSize"
+>;
 
 const paramsSchema = z.object({
   search: z.string().optional(),
 });
 
 export type GetUserListCountResponse = Awaited<
-  ReturnType<typeof getUserListCount>
+  ReturnType<typeof getUserListCountAction>
 >;
 
-export const getUserListCount = cache(
-  createParallelAction(async (params: CountSearchParams = {}) => {
-    const { search } = paramsSchema.parse(params);
+async function getUserListCountAction(params: GetUserListCountParams = {}) {
+  const { search } = paramsSchema.parse(params);
 
-    const db = createDrizzleConnection();
+  const db = createDrizzleConnection();
 
-    // Build the search conditions
-    const searchCondition = search
-      ? or(
-          ilike(userTable.name, `%${search}%`),
-          ilike(userTable.email, `%${search}%`),
-          ilike(userTable.role, `%${search}%`),
-        )
-      : undefined;
+  // Build the search conditions
+  const searchCondition = search
+    ? or(
+        ilike(userTable.name, `%${search}%`),
+        ilike(userTable.email, `%${search}%`),
+        ilike(userTable.role, `%${search}%`),
+      )
+    : undefined;
 
-    // Get total count for pagination
-    const totalResult = await db
-      .select({ count: count() })
-      .from(userTable)
-      .where(searchCondition);
+  // Get total count for pagination
+  const totalResult = await db
+    .select({ count: count() })
+    .from(userTable)
+    .where(searchCondition);
 
-    const total = Number(totalResult[0]?.count) || 0;
+  const total = Number(totalResult[0]?.count) || 0;
 
-    return total;
-  }),
-);
+  return total;
+}
+
+export const { api: getUserListCount } = createServerApi<
+  GetUserListCountParams,
+  GetUserListCountResponse
+>({
+  action: getUserListCountAction,
+  path: "/user/get-user-list-count",
+  inputSchema: paramsSchema,
+});

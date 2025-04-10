@@ -51,7 +51,9 @@ export function CreateOrUpdateUserModalForm({
 
           // kalau update user, invalidate user yang bersangkutan
           if (userData) {
-            queryClient.invalidateQueries(getUserByIdQueryOptions(userData.id));
+            queryClient.invalidateQueries(
+              getUserByIdQueryOptions({ id: userData.id }),
+            );
           }
 
           if (successCallback) {

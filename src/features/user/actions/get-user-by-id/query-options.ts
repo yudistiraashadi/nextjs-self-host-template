@@ -1,13 +1,13 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getUserById } from ".";
+import { getUserById, type GetUserByIdParams } from ".";
 
-export const getUserByIdQueryOptions = (id: string) =>
+export const getUserByIdQueryOptions = (params: GetUserByIdParams) =>
   queryOptions({
     queryKey: [
       "user",
       {
-        id: id,
+        id: params.id,
       },
     ],
-    queryFn: () => getUserById(id),
+    queryFn: () => getUserById(params),
   });

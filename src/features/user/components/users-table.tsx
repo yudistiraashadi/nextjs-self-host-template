@@ -4,7 +4,10 @@ import { SubmitButton } from "@/components/buttons/submit-button";
 import { activateUser } from "@/features/user/actions/activate-user";
 import { deactivateUser } from "@/features/user/actions/deactivate-user";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
-import { type GetUserListResponse } from "@/features/user/actions/get-user-list";
+import {
+  type GetUserListParams,
+  type GetUserListResponse,
+} from "@/features/user/actions/get-user-list";
 import { getUserListCountQueryOptions } from "@/features/user/actions/get-user-list-count/query-options";
 import { getUserListQueryOptions } from "@/features/user/actions/get-user-list/query-options";
 import { CreateOrUpdateUserModalForm } from "@/features/user/components/create-or-update-user-modal-form";
@@ -21,9 +24,7 @@ import {
   MantineReactTable,
   useMantineReactTable,
   type MRT_ColumnDef,
-  type MRT_ColumnFiltersState,
   type MRT_PaginationState,
-  type MRT_SortingState,
 } from "mantine-react-table";
 import {
   useActionState,
@@ -48,10 +49,10 @@ export function UsersTable() {
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState<string | undefined>();
-  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
-    [],
-  );
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<
+    GetUserListParams["columnFilters"]
+  >([]);
+  const [sorting, setSorting] = useState<GetUserListParams["sorting"]>([]);
 
   const [isOpen, { open, close }] = useDisclosure(false, {
     onClose: () => setSelectedEditUser(undefined),
@@ -138,7 +139,7 @@ export function UsersTable() {
 
             if (selectedUserId) {
               queryClient.removeQueries(
-                getUserByIdQueryOptions(selectedUserId),
+                getUserByIdQueryOptions({ id: selectedUserId }),
               );
 
               setSelectedUserId(undefined);
@@ -215,7 +216,7 @@ export function UsersTable() {
 
             if (selectedUserId) {
               queryClient.removeQueries(
-                getUserByIdQueryOptions(selectedUserId),
+                getUserByIdQueryOptions({ id: selectedUserId }),
               );
 
               setSelectedUserId(undefined);
@@ -352,10 +353,10 @@ export function UsersTable() {
     onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: (updater) => {
-      setColumnFilters(updater as MRT_ColumnFiltersState);
+      setColumnFilters(updater as GetUserListParams["columnFilters"]);
     },
     onSortingChange: (updater) => {
-      setSorting(updater as MRT_SortingState);
+      setSorting(updater as GetUserListParams["sorting"]);
     },
     state: {
       columnFilters,

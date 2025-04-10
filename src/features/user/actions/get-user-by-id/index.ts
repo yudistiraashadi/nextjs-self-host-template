@@ -1,22 +1,30 @@
-"use server";
-
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user } from "@/db/drizzle/schema";
-import { createParallelAction } from "@/lib/utils/next-server-action-parallel";
+import { createServerApi } from "@/lib/server-api/create-server-api";
 import { and, eq, ne } from "drizzle-orm";
-import { cache } from "react";
+import { z } from "zod";
 
-export type GetUserByIdResponse = Awaited<ReturnType<typeof getUserById>>;
+export type GetUserByIdParams = { id: string };
+export type GetUserByIdResponse = Awaited<ReturnType<typeof getUserByIdAction>>;
 
-export const getUserById = cache(
-  createParallelAction(async function (id: string) {
-    const db = createDrizzleConnection();
+async function getUserByIdAction(params: GetUserByIdParams) {
+  const db = createDrizzleConnection();
 
-    return await db
-      .select()
-      .from(user)
-      .where(and(eq(user.id, id), ne(user.banned, true)))
-      .limit(1)
-      .then((res) => res[0]);
+  return await db
+    .select()
+    .from(user)
+    .where(and(eq(user.id, params.id), ne(user.banned, true)))
+    .limit(1)
+    .then((res) => res[0]);
+}
+
+export const { api: getUserById } = createServerApi<
+  GetUserByIdParams,
+  GetUserByIdResponse
+>({
+  action: getUserByIdAction,
+  path: "/user/get-user-by-id",
+  inputSchema: z.object({
+    id: z.string(),
   }),
-);
+});
