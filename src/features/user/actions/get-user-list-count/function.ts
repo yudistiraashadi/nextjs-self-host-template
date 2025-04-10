@@ -8,9 +8,6 @@ import { type GetUserListCountParams, getUserListCountParamsSchema } from ".";
 export async function getUserListCountFunction(
   params: GetUserListCountParams = {},
 ) {
-  // sleep 3 seconds
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   const { search } = getUserListCountParamsSchema.parse(params);
 
   const db = createDrizzleConnection();
