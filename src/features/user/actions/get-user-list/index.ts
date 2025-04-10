@@ -4,19 +4,23 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { user as userTable } from "@/db/drizzle/schema";
 import { and, desc, eq, ilike, isNull, or, SQL } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
-import type {
-  MRT_ColumnFiltersState,
-  MRT_SortingState,
-} from "mantine-react-table";
 import { cache } from "react";
 import { z } from "zod";
+
+const validColumns = ["name", "email", "role", "status"] as const;
 
 export type SearchParams = {
   search?: string;
   page?: number;
   pageSize?: number;
-  columnFilters?: MRT_ColumnFiltersState;
-  sorting?: MRT_SortingState;
+  columnFilters?: {
+    id: (typeof validColumns)[number];
+    value: string;
+  }[];
+  sorting?: {
+    id: (typeof validColumns)[number];
+    desc: boolean;
+  }[];
 };
 
 const paramsSchema = z.object({
@@ -24,9 +28,11 @@ const paramsSchema = z.object({
   page: z.coerce.number().positive().default(1),
   pageSize: z.coerce.number().positive().default(10),
   columnFilters: z
-    .array(z.object({ id: z.string(), value: z.string() }))
+    .array(z.object({ id: z.enum(validColumns), value: z.string() }))
     .optional(),
-  sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+  sorting: z
+    .array(z.object({ id: z.enum(validColumns), desc: z.boolean() }))
+    .optional(),
 });
 
 export type GetUserListResponse = Awaited<ReturnType<typeof getUserList>>;
@@ -59,29 +65,26 @@ export const getUserList = cache(async (params: SearchParams = {}) => {
   }
 
   if (columnFilters && columnFilters.length > 0) {
-    const validColumns = ["name", "email", "role", "status"] as const;
     for (const filter of columnFilters) {
-      if (validColumns.includes(filter.id as any)) {
-        if (filter.id === "status") {
-          // For status, check the banned field
-          const isActive = String(filter.value) === "Active";
+      if (filter.id === "status") {
+        // For status, check the banned field
+        const isActive = String(filter.value) === "Active";
 
-          if (isActive) {
-            whereConditions.push(
-              or(
-                eq(userTable.banned, false),
-                isNull(userTable.banned),
-              ) as SQL<unknown>,
-            );
-          } else {
-            whereConditions.push(eq(userTable.banned, true));
-          }
-        } else {
-          const column = filter.id as "name" | "email" | "role";
+        if (isActive) {
           whereConditions.push(
-            ilike(userTable[column], `%${String(filter.value)}%`),
+            or(
+              eq(userTable.banned, false),
+              isNull(userTable.banned),
+            ) as SQL<unknown>,
           );
+        } else {
+          whereConditions.push(eq(userTable.banned, true));
         }
+      } else {
+        const column = filter.id as "name" | "email" | "role";
+        whereConditions.push(
+          ilike(userTable[column], `%${String(filter.value)}%`),
+        );
       }
     }
   }
@@ -103,6 +106,10 @@ export const getUserList = cache(async (params: SearchParams = {}) => {
         return sortItem.desc
           ? query.orderBy(desc(userTable.role))
           : query.orderBy(userTable.role);
+      } else if (sortItem.id === "status") {
+        return sortItem.desc
+          ? query.orderBy(desc(userTable.banned))
+          : query.orderBy(userTable.banned);
       }
     }
 
