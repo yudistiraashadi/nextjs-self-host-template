@@ -39,12 +39,14 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BASE_URL=${BASE_URL}
       - REDIS_URL=${REDIS_URL}
       - REDIS_ACCESS_KEY=${REDIS_ACCESS_KEY}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
     logging:
       driver: "json-file"
       options:
