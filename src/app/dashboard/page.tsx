@@ -1,5 +1,4 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { getUserList } from "@/features/user/actions/get-user-list";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { tryCatchAsync } from "@/lib/utils/try-catch-async";
 import type { Metadata } from "next";
@@ -17,9 +16,6 @@ export default async function DashboardPage() {
     return redirect("/");
   }
   // END OF AUTH GUARD
-
-  const userListData = await getUserList();
-  console.log("userListData", userListData);
 
   return (
     <DashboardSectionContainer>
