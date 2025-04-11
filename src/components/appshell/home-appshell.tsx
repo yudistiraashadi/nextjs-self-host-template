@@ -11,7 +11,7 @@ export function HomeAppshell({
   userData,
 }: {
   children: React.ReactNode;
-  userData?: AuthGuardResponse;
+  userData?: AuthGuardResponse | null;
 }) {
   return (
     <AppShell header={{ height: 60 }} padding="xs">
