@@ -30,20 +30,20 @@ export function getS3Client({
  * Converts a stored image path to a URL
  * @param imagePath - The image path stored in the database (e.g., "post/123-abc.jpg")
  * @param options - Configuration options
- * @param options.isPrivate - Whether the file is in a private bucket requiring authentication (default: true)
+ * @param options.isPrivate - Whether the file is in a private bucket requiring authentication (default: false)
  * @param options.expiresIn - Expiration time in seconds for signed URLs (default: 3600 = 1 hour)
  * @returns A URL for the image (signed URL for private files, direct URL for public files)
  */
-export async function getMediaUrl(
+export async function getMediaUrl<T extends boolean | undefined = false>(
   imagePath: string | null | undefined,
   options?: {
-    isPrivate?: boolean;
+    isPrivate?: T;
     expiresIn?: number;
   },
-): Promise<string | null> {
-  if (!imagePath) return null;
+): Promise<T extends true ? string | null : string> {
+  if (!imagePath) return null as any;
 
-  const { isPrivate = true, expiresIn = 3600 } = options || {};
+  const { isPrivate = false, expiresIn = 3600 } = options || {};
   const { bucket, path } = getStorageBucketAndPath(imagePath);
 
   // For public files, return a direct URL
@@ -62,6 +62,6 @@ export async function getMediaUrl(
     return await getSignedUrl(s3Client, command, { expiresIn });
   } catch (error) {
     console.error("Error generating signed URL:", error);
-    return null;
+    return null as any;
   }
 }
