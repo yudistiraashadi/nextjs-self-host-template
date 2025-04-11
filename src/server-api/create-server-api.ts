@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { NextRequest, NextResponse } from "next/server";
 import { cache } from "react";
 import { z } from "zod";
@@ -96,8 +97,8 @@ export function createServerApi<TInput, TOutput>({
   apiRegistry.register(path, handler);
 
   // Create and return the cached client-side API function
-  return cache(async (input: TInput) => {
-    return (await fetch(`/api/server${path}`, {
+  return cache(async (input: TInput = {} as TInput) => {
+    return (await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/server${path}`, {
       method: "POST",
       body: JSON.stringify(input),
     }).then((res) => res.json())) as TOutput;

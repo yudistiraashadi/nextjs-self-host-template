@@ -2,7 +2,7 @@ import { apiRegistry } from "@/server-api/api-registry";
 import { NextRequest, NextResponse } from "next/server";
 
 // Import this file to ensure all API functions are registered
-import "@/server-api/api-imports";
+import "@/server-api/load-server-api";
 
 export async function POST(
   req: NextRequest,
