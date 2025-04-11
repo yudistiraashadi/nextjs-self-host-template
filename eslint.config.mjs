@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 // @ts-ignore -- no types for this plugin
 import drizzle from "eslint-plugin-drizzle";
+import enforceServerApiImport from "./eslint-rules/enforce-server-api-import.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,6 +17,7 @@ const eslintConfig = [
   {
     plugins: {
       drizzle,
+      "custom-rules": { rules: { "enforce-server-api-import": enforceServerApiImport } },
     },
     rules: {
       "import/no-cycle": 2,
@@ -28,6 +30,7 @@ const eslintConfig = [
         "error",
         { drizzleObjectName: ["db", "ctx.db"] },
       ],
+      "custom-rules/enforce-server-api-import": "error",
     },
   },
 ];
