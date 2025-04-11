@@ -7,7 +7,7 @@ import { zfd } from "zod-form-data";
 
 export async function createUser(prevState: any, formData: FormData) {
   // AUTH GUARD
-  authGuard(["admin"]);
+  await authGuard(["admin"]);
 
   // VALIDATION
   const validationRules = z.object({
