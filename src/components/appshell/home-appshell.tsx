@@ -56,7 +56,7 @@ export function HomeAppshell({
               ) : (
                 <Button
                   component={Link}
-                  href="/login"
+                  href="/auth/login"
                   variant="filled"
                   color="blue"
                 >
