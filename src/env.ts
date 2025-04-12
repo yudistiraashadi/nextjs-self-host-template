@@ -23,7 +23,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_BASE_URL: z.string().url(),
+    // NEXT_PUBLIC_BASE_URL: z.string().url(),
   },
 
   /**
@@ -37,7 +37,6 @@ export const env = createEnv({
     MINIO_ROOT_USER: process.env.MINIO_ROOT_USER,
     MINIO_ROOT_PASSWORD: process.env.MINIO_ROOT_PASSWORD,
     MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

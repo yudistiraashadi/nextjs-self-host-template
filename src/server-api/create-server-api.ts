@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import { NextRequest, NextResponse } from "next/server";
 import { cache } from "react";
 import { z } from "zod";
@@ -22,6 +21,11 @@ interface CreateServerApiOptions<TInput, TOutput> {
 
 /**
  * Creates a server API endpoint from a server function and automatically registers it
+ *
+ * @param function - The server function to wrap
+ * @param path - The path for the API endpoint. make sure it's unique
+ * @param inputSchema - The input validation schema using zod
+ *
  * @example
  * ```ts
  * // src/features/user/actions/get-user-by-id/index.ts
@@ -96,11 +100,16 @@ export function createServerApi<TInput, TOutput>({
   // Register the handler
   apiRegistry.register(path, handler);
 
-  // Create and return the cached client-side API function
+  // return API function. It will call the server function if it's on the server,
+  // in client it will call the fetch-based implementation
   return cache(async (input: TInput = {} as TInput) => {
-    return (await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/server${path}`, {
-      method: "POST",
-      body: JSON.stringify(input),
-    }).then((res) => res.json())) as TOutput;
+    return (
+      typeof window === "undefined"
+        ? fn(input)
+        : await fetch(`/api/server${path}`, {
+            method: "POST",
+            body: JSON.stringify(input),
+          }).then((res) => res.json())
+    ) as TOutput;
   });
 }
