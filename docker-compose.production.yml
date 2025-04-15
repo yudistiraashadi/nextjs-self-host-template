@@ -49,5 +49,19 @@ services:
       options:
         max-size: "10m"
     restart: always
+    expose:
+      - 3000
+
+  caddy:
+    image: caddy:2.9.1-alpine
+    container_name: caddy
+    restart: always
     ports:
-      - 3000:3000
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./docker_data/caddy_data:/data
+      - ./docker_data/caddy_config:/config
+    depends_on:
+      - nextjs
