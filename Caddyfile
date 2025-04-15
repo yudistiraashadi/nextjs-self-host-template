@@ -1,8 +1,4 @@
 example.com {
-    tls {
-        # Automatically request and manage certificates
-    }
-
     # Forward everything to NextJS app
     reverse_proxy nextjs:3000
 } 
