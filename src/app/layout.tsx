@@ -6,15 +6,6 @@ import "./globals.css";
 
 import { SearchParamsNotification } from "@/lib/notification/search-params-notification";
 import TanstackQueryProvider from "@/lib/tanstack-query/provider";
-import {
-  ColorSchemeScript,
-  createTheme,
-  DEFAULT_THEME,
-  mantineHtmlProps,
-  MantineProvider,
-} from "@mantine/core";
-import { ModalsProvider } from "@mantine/modals";
-import { Notifications } from "@mantine/notifications";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 
@@ -31,13 +22,6 @@ export const metadata: Metadata = {
   description: "Website Description",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
-
-const mantineTheme = createTheme({
-  fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
-  headings: {
-    fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
-  },
-});
 
 export default function RootLayout({
   children,
