@@ -1,21 +1,29 @@
-# Getting Started
+# Development Setup
 
-First, run the development server:
+1. Copy `.env.example` to `.env` and fill in the required values
+2. Start the development environment:
+   ```bash
+   docker-compose -f docker-compose.development.yml up -d
+   ```
+3. Run database migrations:
+   ```bash
+   pnpm db:push
+   ```
+4. Start the development server:
+   ```bash
+   pnpm dev
+   ```
 
-```bash
-npm run dev
-# or
-pnpm dev
-```
+# Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-# Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js](https://nextjs.org/) - Web framework
+- [Shadcn UI](https://ui.shadcn.com/) + [Tailwind CSS V4](https://tailwindcss.com/) - UI components
+- [Drizzle ORM](https://orm.drizzle.team/) + [PostgreSQL](https://www.postgresql.org/) - Database and ORM
+- [Better Auth](https://www.better-auth.com/) - Authentication
+- [Tanstack Query](https://nextjs.org/) - Data fetching
+- [Zod](https://zod.dev/) - Data validation
+- [Caddy](https://caddyserver.com/) - Web server
+- [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) - Containerization
 
 # Project Structure
 
@@ -103,6 +111,17 @@ A comprehensive utility for S3-compatible file storage operations. It provides f
 ### `server-api`
 
 Contains the server API setup using the `createServerApi` utility for creating type-safe API endpoints.
+
+# Available Scripts
+
+- `pnpm dev`: Start development server
+- `pnpm build`: Build for production
+- `pnpm start`: Start production server
+- `pnpm db:generate`: Generate database migrations
+- `pnpm db:push`: Push database changes
+- `pnpm db:studio`: Open Drizzle Studio
+- `pnpm lint`: Run ESLint
+- `pnpm format:write`: Format code with Prettier
 
 # Common Patterns
 
@@ -274,30 +293,3 @@ async function downloadHandler(filePath) {
   // Process the file...
 }
 ```
-
-# Development Setup
-
-1. Copy `.env.example` to `.env` and fill in the required values
-2. Start the development environment:
-   ```bash
-   docker-compose -f docker-compose.development.yml up -d
-   ```
-3. Run database migrations:
-   ```bash
-   pnpm db:push
-   ```
-4. Start the development server:
-   ```bash
-   pnpm dev
-   ```
-
-# Available Scripts
-
-- `pnpm dev`: Start development server
-- `pnpm build`: Build for production
-- `pnpm start`: Start production server
-- `pnpm db:generate`: Generate database migrations
-- `pnpm db:push`: Push database changes
-- `pnpm db:studio`: Open Drizzle Studio
-- `pnpm lint`: Run ESLint
-- `pnpm format:write`: Format code with Prettier
