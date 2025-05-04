@@ -1,11 +1,10 @@
 "use client";
 
-import { notifications } from "@mantine/notifications";
-import { IconCheck, IconExclamationMark, IconX } from "@tabler/icons-react";
 import { ReactNode } from "react";
+import { toast } from "sonner";
 
 type NotificationHelperProps = {
-  type: "success" | "error" | "info" | "warning";
+  type: "success" | "error";
   message: ReactNode;
   title?: ReactNode;
   callback?: () => void;
@@ -32,46 +31,20 @@ type FormStateNotificationHelperProps = {
  * @returns
  */
 export function notificationHelper({
-  type = "info",
+  type = "success",
   message,
   title,
   callback,
 }: NotificationHelperProps) {
-  let icon: ReactNode = <></>;
-  let color = "";
-
-  switch (type) {
-    case "success":
-      icon = <IconCheck />;
-      color = "green";
-      title = title ?? "Success";
-      break;
-
-    case "error":
-      icon = <IconX />;
-      color = "red";
-      title = title ?? "Error";
-      break;
-
-    case "warning":
-      icon = <IconExclamationMark />;
-      color = "yellow";
-      title = title ?? "Warning";
-      break;
-
-    case "info":
-    default:
-      color = "blue";
-      title = title ?? "Info";
-      break;
+  if (type === "success") {
+    toast.success(title, {
+      description: message,
+    });
+  } else if (type === "error") {
+    toast.error(title, {
+      description: message,
+    });
   }
-
-  notifications.show({
-    title,
-    message,
-    color,
-    icon,
-  });
 
   if (callback) {
     callback();

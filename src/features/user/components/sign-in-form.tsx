@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils/styling";
+import Link from "next/link";
 
 // ref: https://ui.shadcn.com/blocks/authentication#login-01
 export function SignInForm({
@@ -47,16 +48,11 @@ export function SignInForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  defaultValue={"asdfasdf"}
-                />
+                <Input id="password" type="password" required />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+                <Button asChild className="w-full">
+                  <Link href="/dashboard">Sign In</Link>
                 </Button>
               </div>
             </div>
