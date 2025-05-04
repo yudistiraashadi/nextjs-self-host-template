@@ -3,20 +3,36 @@ import { cache } from "react";
 import { z } from "zod";
 import { apiRegistry } from "./api-registry";
 
-interface CreateServerApiOptions<TInput, TOutput> {
-  /**
-   * The function to wrap
-   */
-  function: (input: TInput) => Promise<TOutput>;
+interface CreateServerApiOptions<TInput extends z.ZodType<any>, TOutput> {
   /**
    * The path for the API endpoint
    * @example "/users/get-by-id"
    */
   path: string;
   /**
-   * Input validation schema
+   * Input validation schema (optional)
+   * If not provided, the API will accept empty input
    */
-  inputSchema?: z.ZodType<TInput>;
+  inputSchema?: TInput;
+  /**
+   * The function to wrap
+   */
+  function: (
+    input: TInput extends z.ZodType<infer U> ? U : never,
+  ) => Promise<TOutput>;
+}
+
+// Helper function to check if all fields in a schema are optional
+function isAllFieldsOptional(schema: z.ZodType<any>): boolean {
+  if (schema instanceof z.ZodObject) {
+    const shape = (schema as any)._def.shape();
+    return Object.values(shape).every(
+      (field: any) =>
+        field instanceof z.ZodOptional ||
+        (field instanceof z.ZodObject && isAllFieldsOptional(field)),
+    );
+  }
+  return false;
 }
 
 /**
@@ -24,30 +40,46 @@ interface CreateServerApiOptions<TInput, TOutput> {
  *
  * @param function - The server function to wrap
  * @param path - The path for the API endpoint. make sure it's unique
- * @param inputSchema - The input validation schema using zod
+ * @param inputSchema - The input validation schema using zod (optional if no input is needed)
  *
  * @example
  * ```ts
- * // src/features/user/actions/get-user-by-id/index.ts
- * import { createServerApi } from "@/lib/server-api/create-server-api";
- * import { z } from "zod";
- *
- * export const getUserById = createServerApi<GetUserByIdParams, GetUserByIdResponse>({
+ * // With input schema
+ * export const getUserById = createServerApi({
  *   function: async (params) => {
  *     // ... implementation
+ *     return { user: { id: params.id, name: "John Doe" } };
  *   },
  *   path: "/users/get-by-id",
  *   inputSchema: z.object({
  *     id: z.string(),
  *   }),
  * });
+ *
+ * // Without input schema
+ * export const getAllUsers = createServerApi({
+ *   function: async () => {
+ *     // ... implementation returning all users
+ *     return [{ id: "123", name: "John Doe" }];
+ *   },
+ *   path: "/users/get-all",
+ * });
  * ```
  */
-export function createServerApi<TInput, TOutput>({
+export function createServerApi<
+  TSchema extends z.ZodType<any> = z.ZodType<never>,
+  TOutput = any,
+>({
   function: fn,
   path,
   inputSchema,
-}: CreateServerApiOptions<TInput, TOutput>) {
+}: Omit<CreateServerApiOptions<TSchema, TOutput>, "inputSchema"> & {
+  inputSchema?: TSchema;
+}) {
+  // Default empty schema
+  const schema =
+    inputSchema || (z.object({} as never).optional() as unknown as TSchema);
+
   // Create the API handler
   const handler = async (req: NextRequest) => {
     try {
@@ -59,12 +91,14 @@ export function createServerApi<TInput, TOutput>({
         );
       }
 
-      let input: any;
+      let input: any = {};
 
       try {
-        // Parse JSON body
-        const body = await req.json();
-        input = body;
+        // Parse JSON body if content exists
+        const text = await req.text();
+        if (text) {
+          input = JSON.parse(text);
+        }
       } catch {
         return NextResponse.json(
           { error: "Invalid JSON body" },
@@ -73,8 +107,9 @@ export function createServerApi<TInput, TOutput>({
       }
 
       // Validate input if schema is provided
-      if (inputSchema) {
-        const result = inputSchema.safeParse(input);
+      const isOptionalSchema = isAllFieldsOptional(schema);
+      if (!isOptionalSchema || Object.keys(input).length > 0) {
+        const result = schema.safeParse(input);
         if (!result.success) {
           return NextResponse.json(
             { error: "Invalid input", details: result.error.format() },
@@ -85,7 +120,7 @@ export function createServerApi<TInput, TOutput>({
       }
 
       // Execute the server function
-      const output = await fn(input as TInput);
+      const output = await fn(input);
 
       return NextResponse.json(output);
     } catch (error: any) {
@@ -100,16 +135,35 @@ export function createServerApi<TInput, TOutput>({
   // Register the handler
   apiRegistry.register(path, handler);
 
-  // return API function. It will call the server function if it's on the server,
-  // in client it will call the fetch-based implementation
-  return cache(async (input: TInput = {} as TInput) => {
-    return (
-      typeof window === "undefined"
-        ? fn(input)
-        : await fetch(`/api/server${path}`, {
-            method: "POST",
-            body: JSON.stringify(input),
-          }).then((res) => res.json())
-    ) as TOutput;
-  });
+  // Create the type-safe client function
+  const clientFn = async (input: z.input<TSchema> = {} as z.input<TSchema>) => {
+    if (typeof window === "undefined") {
+      return fn(input) as TOutput;
+    }
+
+    try {
+      const response = await fetch(`/api/server${path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Request failed with status ${response.status}`,
+        );
+      }
+
+      return (await response.json()) as TOutput;
+    } catch (error) {
+      console.error(`API request to ${path} failed:`, error);
+      throw error;
+    }
+  };
+
+  // return API function with proper typing
+  return cache(clientFn);
 }
