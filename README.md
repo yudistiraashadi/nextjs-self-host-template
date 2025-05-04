@@ -31,6 +31,8 @@ The project structure for our Next.js template is as follows:
 │   │       └── schema.ts     # Database schema
 │   ├── features              # Feature-based code organization
 │   ├── lib                   # Helper functions and utilities
+│   │   └── utils
+│   │       └── s3-storage.ts # S3 storage utilities
 │   ├── server-api           # Server API setup
 │   └── middleware.ts        # Next.js middleware
 ├── drizzle                   # Drizzle migrations and config
@@ -55,11 +57,11 @@ The `src/` directory contains all the Next.js project source code. Code outside 
 
 ### `app`
 
-This is Next.js's App Router. For details, see the docs at https://nextjs.org/docs/app. The root layout under the app folder is configured to accommodate packages like Tanstack Query and Mantine.
+This is Next.js's App Router. For details, see the docs at https://nextjs.org/docs/app. The root layout under the app folder is configured to accommodate packages like Tanstack Query and Shadcn UI.
 
 ### `components`
 
-While we use Mantine for most UI components, projects often need custom UI components. This is where global custom UI components are placed. As a general rule, try to place feature-specific UI components in the `features` directory since they're often coupled with specific functionality. Only place components here if they're used across multiple features.
+While we use Shadcn UI for most UI components, projects often need custom UI components. This is where global custom UI components are placed. As a general rule, try to place feature-specific UI components in the `features` directory since they're often coupled with specific functionality. Only place components here if they're used across multiple features.
 
 ### `db`
 
@@ -87,6 +89,16 @@ Each feature typically contains:
 ### `lib`
 
 Contains helper functions like custom hooks, database utilities, image compression, etc.
+
+#### `utils/s3-storage.ts`
+
+A comprehensive utility for S3-compatible file storage operations. It provides functions for:
+
+- Getting file URLs (both public and signed private URLs)
+- Downloading files as streams or buffers
+- Working with S3-compatible storage like MinIO or AWS S3
+
+**Always use these utilities for file storage operations rather than implementing your own S3 access logic.**
 
 ### `server-api`
 
@@ -137,16 +149,26 @@ export async function createPost(prevState: any, formData: FormData) {
 
 For data fetching, we use a combination of Server API and Tanstack Query for optimal performance:
 
-```tsx
+```tsx get-post-list-function.ts
+"use server";
+
+export async function getPostListFunction(params: GetPostListParams) {
+  const posts = await db.query.posts.findMany({
+    where: eq(posts.isProtected, params.isProtected),
+  });
+  return posts;
+}
+```
+
+```tsx get-post-list.ts
 // Server API definition
-export const getPostList = createServerApi<
-  GetPostListParams,
-  GetPostListResponse
->({
+export const getPostList = createServerApi({
   function: getPostListFunction,
   path: "/post/get-post-list",
   inputSchema: getPostListParamsSchema,
 });
+
+.....
 
 // Client-side usage
 function PostList() {
@@ -223,6 +245,34 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   },
 });
+```
+
+## 5. S3 File Storage
+
+For file storage operations, always use the utilities in `src/lib/utils/s3-storage.ts`:
+
+```tsx
+import { getFileUrl, downloadFile } from "@/lib/utils/s3-storage";
+
+// Display an image from S3
+function ImageComponent({ filePath }) {
+  // For public files
+  const imageUrl = await getFileUrl(filePath);
+
+  // For private files that require authentication
+  const signedUrl = await getFileUrl(filePath, {
+    isPrivate: true,
+    expiresIn: 3600,
+  });
+
+  return <img src={imageUrl} alt="Stored image" />;
+}
+
+// Download a file
+async function downloadHandler(filePath) {
+  const fileBuffer = await downloadFile(filePath);
+  // Process the file...
+}
 ```
 
 # Development Setup

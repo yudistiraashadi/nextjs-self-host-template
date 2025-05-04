@@ -45,10 +45,10 @@ Caddy is a modern web server that automatically handles HTTPS for you. It:
 
    Replace `example.com` with your actual domain name.
 
-5. Start all services with Docker Compose:
+5. Build and start all services with Docker Compose:
 
    ```
-   docker-compose -f docker-compose.production.yml up -d
+   docker-compose -f docker-compose.production.yml up -d --build
    ```
 
 6. Your application should now be accessible at `https://your-domain.com`
