@@ -1,13 +1,9 @@
-import type { Metadata } from "next";
+import { SignInForm } from "@/features/user/components/sign-in-form";
 
-export const metadata: Metadata = {
-  title: "Home",
-};
-
-export default async function Home() {
+export default function Login() {
   return (
-    <section className="container mx-auto py-12">
-      <h2 className="text-2xl font-semibold">Home</h2>
+    <section className="flex min-h-screen flex-col items-center justify-center">
+      <SignInForm />
     </section>
   );
 }
