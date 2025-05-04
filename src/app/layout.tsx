@@ -1,13 +1,12 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-// Mantine styles
-
+import { ThemeProvider } from "@/components/theme-provider";
 import { SearchParamsNotification } from "@/lib/notification/search-params-notification";
 import TanstackQueryProvider from "@/lib/tanstack-query/provider";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
+import { Toaster } from "sonner";
+import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,33 +28,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
-      <head>
-        <ColorSchemeScript defaultColorScheme="light" />
-      </head>
-      <body
-        suppressHydrationWarning
-        className={`${inter.variable} antialiased`}
-      >
-        <NextTopLoader />
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextTopLoader showSpinner={false} />
 
-        <TanstackQueryProvider>
-          <MantineProvider theme={mantineTheme} defaultColorScheme="light">
-            <ModalsProvider>
-              <Notifications
-                position="top-right"
-                zIndex={1000}
-                autoClose={10000}
-              />
+          <TanstackQueryProvider>
+            <Toaster richColors closeButton />
+            <Suspense>
+              <SearchParamsNotification />
+            </Suspense>
 
-              <Suspense>
-                <SearchParamsNotification />
-              </Suspense>
-
-              {children}
-            </ModalsProvider>
-          </MantineProvider>
-        </TanstackQueryProvider>
+            {children}
+          </TanstackQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
