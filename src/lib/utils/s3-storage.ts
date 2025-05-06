@@ -1,5 +1,10 @@
 import { env } from "@/env";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export function getStorageBucketAndPath(fullPath: string) {
@@ -61,7 +66,7 @@ export async function getFileUrl<T extends boolean | undefined = false>(
   try {
     return await getSignedUrl(s3Client, command, { expiresIn });
   } catch (error) {
-    console.error("Error generating signed URL:", error);
+    console.error("[S3-STORAGE-UTILS] Error generating signed URL:", error);
     return null as any;
   }
 }
@@ -85,8 +90,10 @@ export async function getObject(filePath: string) {
     // Return the object's body stream
     return response.Body;
   } catch (error) {
-    console.error("Error downloading file from S3:", error);
-    throw error;
+    console.error("[S3-STORAGE-UTILS] Error downloading file from S3:", error);
+    throw new Error(
+      `[S3-STORAGE-UTILS] ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
@@ -97,16 +104,18 @@ export async function getObject(filePath: string) {
  */
 export async function downloadFile(filePath: string): Promise<Buffer> {
   try {
-    const fileStream = await getObject(filePath);
-    if (!fileStream) {
-      throw new Error("Failed to get file stream");
+    const fileObject = await getObject(filePath);
+    if (!fileObject) {
+      throw new Error("[S3-STORAGE-UTILS] Failed to get file object");
     }
 
-    // Convert stream to buffer
-    return await streamToBuffer(fileStream);
+    const fileBuffer = await fileObject.transformToByteArray();
+    return Buffer.from(fileBuffer);
   } catch (error) {
-    console.error("Error downloading file:", error);
-    throw error;
+    console.error("[S3-STORAGE-UTILS] Error downloading file:", error);
+    throw new Error(
+      `[S3-STORAGE-UTILS] ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
@@ -115,12 +124,89 @@ export async function downloadFile(filePath: string): Promise<Buffer> {
  * @param stream - The readable stream to convert
  * @returns A promise that resolves to a buffer
  */
-async function streamToBuffer(stream: any): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
+async function streamToBuffer(stream: ReadableStream): Promise<Buffer> {
+  return new Promise((resolve) => {
     const chunks: Buffer[] = [];
+    const reader = stream.getReader();
 
-    stream.on("data", (chunk: Buffer) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    const read = async () => {
+      const { done, value } = await reader.read();
+      if (done) {
+        resolve(Buffer.concat(chunks));
+        return;
+      }
+      chunks.push(value);
+      read();
+    };
+    read();
   });
+}
+
+/**
+ * Uploads a file to S3 storage
+ * @param filePath - The destination path in S3 (e.g., "bucket/path/to/file.jpg")
+ * @param fileContent - The file content as Buffer or readable stream
+ * @param contentType - MIME type of the file (e.g., "image/jpeg")
+ * @returns A promise that resolves to the uploaded file path
+ */
+export async function uploadFile(
+  filePath: string,
+  fileContent: Buffer | ReadableStream | File,
+  contentType?: string,
+): Promise<string> {
+  const s3Client = getS3Client();
+  const { bucket, path } = getStorageBucketAndPath(filePath);
+
+  // transform all fileContent to buffer
+  let fileBuffer: Buffer;
+  if (fileContent instanceof Buffer) {
+    fileBuffer = fileContent;
+  } else if (fileContent instanceof ReadableStream) {
+    fileBuffer = await streamToBuffer(fileContent);
+  } else if (fileContent instanceof File) {
+    fileBuffer = Buffer.from(await fileContent.arrayBuffer());
+  } else {
+    throw new Error("Unsupported file content type");
+  }
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: path,
+    Body: fileBuffer,
+    ContentType: contentType,
+  });
+
+  try {
+    await s3Client.send(command);
+    return filePath;
+  } catch (error) {
+    console.error("[S3-STORAGE-UTILS] Error uploading file to S3:", error);
+    throw new Error(
+      `[S3-STORAGE-UTILS] ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+/**
+ * Deletes a file from S3 storage
+ * @param filePath - The path of the file to delete (e.g., "bucket/path/to/file.jpg")
+ * @returns A promise that resolves when the file is successfully deleted
+ */
+export async function deleteFile(filePath: string): Promise<void> {
+  const s3Client = getS3Client();
+  const { bucket, path } = getStorageBucketAndPath(filePath);
+
+  const command = new DeleteObjectCommand({
+    Bucket: bucket,
+    Key: path,
+  });
+
+  try {
+    await s3Client.send(command);
+  } catch (error) {
+    console.error("[S3-STORAGE-UTILS] Error deleting file from S3:", error);
+    throw new Error(
+      `[S3-STORAGE-UTILS] ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 }
